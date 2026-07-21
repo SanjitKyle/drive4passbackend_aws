@@ -1,0 +1,62 @@
+# =========================
+# Node.js related ignores
+# =========================
+
+# Node modules
+/node_modules/
+/backups/
+
+# Environment variables
+.env
+serviceAccountKey.json
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# =========================
+# Development / Build Files
+# =========================
+
+# Output directories
+/dist/
+/build/
+/bin/
+/obj/
+/tmp/
+/temp/
+/coverage/
+
+# Cache
+.cache/
+.npm/
+.pnp/
+.pnp.js
+.yarn/cache
+.pnpm-store/
+
+# Compiled files
+*.tsbuildinfo
+
+
+# =========================
+# Editor / IDE settings
+# =========================
+
+# VSCode
+.vscode/
+.history/
+
+# WebStorm / IntelliJ
+.idea/
+*.iml
+
+# Other temporary editor files
+*.swp
+*.swo
+
+# Documentation
+/docs/
