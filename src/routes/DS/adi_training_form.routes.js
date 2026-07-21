@@ -152,7 +152,72 @@ router.post('/adi-training-forms/update/:id', AdiTrainingFormController.updateAd
  */
 router.post('/adi-training-forms/delete/:id', AdiTrainingFormController.deleteAdiTrainingForm);
 
+/**
+ * @swagger
+ * /en/adi-training-forms/updatestatus/{id}:
+ *   post:
+ *     summary: Update ADI Training form status
+ *     tags: [AdiTrainingForm]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 example: Contacted
+ *     responses:
+ *       200:
+ *         description: Status updated successfully
+ *       400:
+ *         description: Status is required
+ *       404:
+ *         description: ADI Training form not found
+ *       500:
+ *         description: Server error
+ */
 router.post('/adi-training-forms/updatestatus/:id', Auth, AdiTrainingFormController.updateStatus);
+
+/**
+ * @swagger
+ * /en/adi-training-forms/assign/{id}:
+ *   post:
+ *     summary: Assign instructor to ADI Training form
+ *     tags: [AdiTrainingForm]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               instructor_id:
+ *                 type: string
+ *                 example: 60d21b4667d0d8992e610c85
+ *     responses:
+ *       200:
+ *         description: Instructor assigned successfully
+ *       400:
+ *         description: Instructor ID is required
+ *       404:
+ *         description: ADI Training form not found
+ *       500:
+ *         description: Server error
+ */
 router.post('/adi-training-forms/assign/:id', Auth, AdiTrainingFormController.assignInstructor);
 
 module.exports = router;
