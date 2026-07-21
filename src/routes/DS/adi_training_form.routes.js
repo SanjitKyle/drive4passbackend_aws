@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Auth = require('../../middleware/auth.middleware');
 const AdiTrainingFormController = require('../../controllers/DS/adi_training_form.controller');
 
 /**
@@ -150,5 +151,8 @@ router.post('/adi-training-forms/update/:id', AdiTrainingFormController.updateAd
  *         description: Server error
  */
 router.post('/adi-training-forms/delete/:id', AdiTrainingFormController.deleteAdiTrainingForm);
+
+router.post('/adi-training-forms/updatestatus/:id', Auth, AdiTrainingFormController.updateStatus);
+router.post('/adi-training-forms/assign/:id', Auth, AdiTrainingFormController.assignInstructor);
 
 module.exports = router;

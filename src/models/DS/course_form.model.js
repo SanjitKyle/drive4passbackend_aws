@@ -27,6 +27,26 @@ const CourseFormSchema = new mongoose.Schema({
     },
     additional_message: {
         type: String
+    },
+     status: {
+        type: String,
+        default: 'New',
+        enum: [
+            'New',
+            'Contacted',
+            'Booked',
+            'Waiting list',
+            'No Response',
+            'Test-Only Enquiry',
+            'Passed to Office',
+            'Quoted / Price Given',
+            'Call Back Later',
+            'Lost'
+        ]
+    },
+    instructor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'InstructorMaster'
     }
 }, {
     timestamps: true

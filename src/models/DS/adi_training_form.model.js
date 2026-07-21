@@ -14,6 +14,22 @@ const AdiTrainingFormSchema = new mongoose.Schema({
         type: String,
         enum: ['None', 'Started Part 1', 'Passed Part 1', 'Passed Part 2']
     },
+        status: {
+        type: String,
+        default: 'New',
+        enum: [
+            'New',
+            'Contacted',
+            'Booked',
+            'Waiting list',
+            'No Response',
+            'Test-Only Enquiry',
+            'Passed to Office',
+            'Quoted / Price Given',
+            'Call Back Later',
+            'Lost'
+        ]
+    },
     franchise_status: {
         type: String,
         enum: ['YES', 'NO']
@@ -23,6 +39,10 @@ const AdiTrainingFormSchema = new mongoose.Schema({
     },
     message: {
         type: String
+    },
+    instructor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'InstructorMaster'
     }
 }, {
     timestamps: true

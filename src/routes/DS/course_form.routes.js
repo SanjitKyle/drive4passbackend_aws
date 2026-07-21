@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Auth = require('../../middleware/auth.middleware');
 const CourseFormController = require('../../controllers/DS/course_form.controller');
 
 /**
@@ -167,5 +168,8 @@ router.post('/course-forms/update/:id', CourseFormController.updateCourseForm);
  *         description: Server error
  */
 router.post('/course-forms/delete/:id', CourseFormController.deleteCourseForm);
+
+router.post('/course-forms/updatestatus/:id', Auth, CourseFormController.updateStatus);
+router.post('/course-forms/assign/:id', Auth, CourseFormController.assignInstructor);
 
 module.exports = router;
