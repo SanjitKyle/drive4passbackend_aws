@@ -167,4 +167,43 @@ router.post('/franchise-enquiries/update/:id', FranchiseEnquiryController.update
  */
 router.post('/franchise-enquiries/delete/:id', FranchiseEnquiryController.deleteFranchiseEnquiry);
 
+/**
+ * @swagger
+ * /en/franchise-enquiries/update-status/{id}:
+ *   post:
+ *     summary: Update Franchise enquiry status
+ *     tags: [FranchiseEnquiry]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum:
+ *                   - New
+ *                   - Contacted
+ *                   - Under review
+ *                   - Waiting list
+ *                   - Converted to instructor
+ *                   - No response
+ *     responses:
+ *       200:
+ *         description: Franchise enquiry status updated successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Franchise enquiry not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/franchise-enquiries/update-status/:id', FranchiseEnquiryController.updateFranchiseEnquiryStatus);
+
 module.exports = router;

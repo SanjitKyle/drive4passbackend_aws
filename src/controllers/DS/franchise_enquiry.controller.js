@@ -123,3 +123,40 @@ exports.deleteFranchiseEnquiry = async (req, res) => {
         });
     }
 };
+
+exports.updateFranchiseEnquiryStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({
+                status: false,
+                message: 'Status is required'
+            });
+        }
+
+        const updatedEnquiry = await FranchiseEnquiry.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedEnquiry) {
+            return res.status(404).json({ status: false, message: 'Franchise enquiry not found' });
+        }
+
+        res.status(200).json({
+            status: true,
+            message: 'Franchise enquiry status updated successfully',
+            data: updatedEnquiry
+        });
+    } catch (error) {
+        console.error('Error in updateFranchiseEnquiryStatus:', error);
+        res.status(500).json({
+            status: false,
+            message: 'Internal Server Error',
+            error: error.message
+        });
+    }
+};
