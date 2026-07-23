@@ -307,7 +307,7 @@ exports.sendReviewLink = async (req, res, next) => {
 
     const businessName = "Drive4Pass";
 
-    await MailSend.SendReviewLinkMail(businessName, form.email, form.name, review_link);
+    await MailSend.SendReviewLinkMail(businessName, form.email, form.name);
 
     await CourseFormEmailLog.create({
       course_form_id: form._id,

@@ -362,7 +362,7 @@ exports.SendResourcePackMail = async (businessName, email, name) => {
     throw error;
   }
 };
-exports.SendReviewLinkMail = async (businessName, email, name, reviewLink) => {
+exports.SendReviewLinkMail = async (businessName, email, name) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
