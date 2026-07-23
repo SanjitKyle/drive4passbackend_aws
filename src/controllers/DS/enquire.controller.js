@@ -4,7 +4,8 @@ const NotificationToken = require("../../models/DS/fcmtokenstore");
 const InstructorMaster = require('../../models/DS/instructor_master.model');
 const NotificationStore = require('../../models/DS/notification_stored');
 const { sendNotification } = require('./message_token_store');
-// ✅ Create new enquiry
+const MailSend = require('../../utils/MailSend');
+const EnquiryEmailLog = require('../../models/DS/enquiry_email_log.model');
 exports.createEnquiry = async (req, res) => {
   try {
     const payload = req.body.form_fields || req.body;
@@ -403,5 +404,110 @@ exports.editEnquiry = async (req, res) => {
       message: "Error updating enquiry",
       error: error.message
     });
+  }
+};
+
+exports.sendResourcePack = async (req, res, next) => {
+  try {
+    const { enquiry_id } = req.body;
+    const senderId = req.user ? req.user._id : null;
+
+    if (!enquiry_id) {
+      return res.status(400).json({ success: false, message: "enquiry_id is required." });
+    }
+
+    const enquiry = await Enquire.findById(enquiry_id);
+    if (!enquiry) {
+      return res.status(404).json({ success: false, message: "Enquiry not found." });
+    }
+
+    if (!enquiry.email) {
+      return res.status(400).json({ success: false, message: "Enquiry does not have an email address." });
+    }
+
+    const businessName = "Drive4Pass";
+
+    await MailSend.SendResourcePackMail(businessName, enquiry.email, enquiry.name);
+
+    await EnquiryEmailLog.create({
+      enquiry_id: enquiry._id,
+      email_type: 'resource_pack',
+      sent_by: senderId,
+      status: 'success'
+    });
+
+    res.status(200).json({ success: true, message: `Resource pack email sent successfully to ${enquiry.email}.` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error sending resource pack", error: err.message });
+  }
+};
+
+exports.sendReviewLink = async (req, res, next) => {
+  try {
+    const { enquiry_id, review_link } = req.body;
+    const senderId = req.user ? req.user._id : null;
+
+    if (!enquiry_id || !review_link) {
+      return res.status(400).json({ success: false, message: "enquiry_id and review_link are required." });
+    }
+
+    const enquiry = await Enquire.findById(enquiry_id);
+    if (!enquiry) {
+      return res.status(404).json({ success: false, message: "Enquiry not found." });
+    }
+
+    if (!enquiry.email) {
+      return res.status(400).json({ success: false, message: "Enquiry does not have an email address." });
+    }
+
+    const businessName = "Drive4Pass";
+
+    await MailSend.SendReviewLinkMail(businessName, enquiry.email, enquiry.name, review_link);
+
+    await EnquiryEmailLog.create({
+      enquiry_id: enquiry._id,
+      email_type: 'review_link',
+      sent_by: senderId,
+      status: 'success'
+    });
+
+    res.status(200).json({ success: true, message: `Review link email sent successfully to ${enquiry.email}.` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error sending review link", error: err.message });
+  }
+};
+
+exports.sendWelcomeMessage = async (req, res, next) => {
+  try {
+    const { enquiry_id } = req.body;
+    const senderId = req.user ? req.user._id : null;
+
+    if (!enquiry_id) {
+      return res.status(400).json({ success: false, message: "enquiry_id is required." });
+    }
+
+    const enquiry = await Enquire.findById(enquiry_id);
+    if (!enquiry) {
+      return res.status(404).json({ success: false, message: "Enquiry not found." });
+    }
+
+    if (!enquiry.email) {
+      return res.status(400).json({ success: false, message: "Enquiry does not have an email address." });
+    }
+
+    const businessName = "Drive4Pass";
+
+    await MailSend.SendWelcomeMessageMail(businessName, enquiry.email, enquiry.name);
+
+    await EnquiryEmailLog.create({
+      enquiry_id: enquiry._id,
+      email_type: 'welcome_message',
+      sent_by: senderId,
+      status: 'success'
+    });
+
+    res.status(200).json({ success: true, message: `Welcome message email sent successfully to ${enquiry.email}.` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error sending welcome message", error: err.message });
   }
 };

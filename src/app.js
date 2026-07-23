@@ -30,6 +30,7 @@ app.get('/', (_, resp) => {
   resp.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.use('/api/en', require('./routes/DS/enquiry_email.routes.js'));
 app.use('/api/en', require('./routes/DS/enquire.routes.js'));
 app.use('/api/en', require('./routes/DS/course_form.routes.js'));
 app.use('/api/en', require('./routes/DS/adi_training_form.routes.js'));
