@@ -444,10 +444,10 @@ exports.sendResourcePack = async (req, res, next) => {
 
 exports.sendReviewLink = async (req, res, next) => {
   try {
-    const { enquiry_id, review_link } = req.body;
+    const { enquiry_id } = req.body;
     const senderId = req.user ? req.user._id : null;
 
-    if (!enquiry_id || !review_link) {
+    if (!enquiry_id ) {
       return res.status(400).json({ success: false, message: "enquiry_id and review_link are required." });
     }
 

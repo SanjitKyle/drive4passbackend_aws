@@ -289,10 +289,10 @@ exports.sendResourcePack = async (req, res, next) => {
 
 exports.sendReviewLink = async (req, res, next) => {
   try {
-    const { course_form_id, review_link } = req.body;
+    const { course_form_id } = req.body;
     const senderId = req.user ? req.user._id : null;
 
-    if (!course_form_id || !review_link) {
+    if (!course_form_id ) {
       return res.status(400).json({ success: false, message: "course_form_id and review_link are required." });
     }
 
