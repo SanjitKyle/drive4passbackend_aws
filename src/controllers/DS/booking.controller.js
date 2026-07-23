@@ -6,6 +6,9 @@ const InstructorAvailability = require("../../models/DS/weekly_availability");
 const { json } = require("express");
 const { createCreditLog } = require("./pupil_credits_log.controller");
 const pupilCreditLogs = require("../../models/DS/pupil_credit_logs.model");
+const NotificationToken = require("../../models/DS/fcmtokenstore");
+const NotificationStore = require("../../models/DS/notification_stored");
+const { sendNotification } = require("./message_token_store");
 
 exports.createBooking = async (req, res, next) => {
   try {
@@ -195,6 +198,29 @@ exports.createBooking = async (req, res, next) => {
         success: false,
         message: "Credit log creation failed",
       });
+    }
+
+    // =============================
+    // SEND NOTIFICATION TO INSTRUCTOR
+    // =============================
+    if (String(instructor_id) !== String(created_by)) {
+      const userToSendNotification = await NotificationToken.findOne({ user: instructor_id });
+      if (userToSendNotification?.token) {
+        let notificationBody = `A new booking request has come to you.`;
+        const response = await sendNotification({
+          token: userToSendNotification.token,
+          title: "New Booking Request",
+          body: notificationBody,
+        });
+
+        if (response) {
+          await NotificationStore.create({
+            message: notificationBody,
+            receiver_id: instructor_id,
+            sender_id: created_by,
+          });
+        }
+      }
     }
 
     // =============================
