@@ -164,40 +164,31 @@ exports.createBooking = async (req, res, next) => {
     }
 
     // =============================
-    // UPDATE REMAINING HOURS
+    // UPDATE REMAINING HOURS IF COMPLETED
     // =============================
-    const remaining = pupil.total_credit - totalSpent;
+    if (status === "completed") {
+      const remaining = pupil.remaining_hour - credit_use;
+      await pupilModel.findByIdAndUpdate(
+        pupil_id,
+        { remaining_hour: remaining },
+        { new: true },
+      );
 
-    const updatedPupil = await pupilModel.findByIdAndUpdate(
-      pupil_id,
-      { remaining_hour: remaining },
-      { new: true },
-    );
-
-    if (!updatedPupil) {
-      return res.status(500).json({
-        success: false,
-        message: "Could not update remaining hours",
+      const creditLog = await createCreditLog({
+        pupil_id,
+        credit_hours: -Number(credit_use),
+        reference_id: createdBooking._id,
+        reference: "booking",
+        school_id,
+        created_by,
       });
-    }
 
-    // =============================
-    // CREATE CREDIT LOG
-    // =============================
-    const creditLog = await createCreditLog({
-      pupil_id,
-      credit_hours: -Number(credit_use),
-      reference_id: createdBooking._id,
-      reference: "booking",
-      school_id,
-      created_by,
-    });
-
-    if (!creditLog) {
-      return res.status(500).json({
-        success: false,
-        message: "Credit log creation failed",
-      });
+      if (!creditLog) {
+        return res.status(500).json({
+          success: false,
+          message: "Credit log creation failed",
+        });
+      }
     }
 
     // =============================
@@ -366,32 +357,32 @@ exports.updateBooking = async (req, res, next) => {
       updateData.credit_use = newCreditUse;
     }
 
-    // Update pupil credits
-    if (newCreditUse !== existingBooking.credit_use) {
+    // Update pupil credits only if the booking was already completed
+    if (newCreditUse !== existingBooking.credit_use && existingBooking.status === "completed") {
       const pupilProfile = await pupilModel.findById(
         existingBooking.pupil_id
       );
 
       if (pupilProfile) {
-        pupilProfile.total_credit =
-          pupilProfile.total_credit -
-          existingBooking.credit_use +
+        pupilProfile.remaining_hour =
+          pupilProfile.remaining_hour +
+          existingBooking.credit_use -
           newCreditUse;
 
         await pupilProfile.save();
       }
+
+      // Update credit log
+      await pupilCreditLogs.findOneAndUpdate(
+        { reference_id: existingBooking._id },
+        { credit_hours: -Number(newCreditUse) },
+        { new: true }
+      );
     }
 
     const updatedBooking = await booking.findOneAndUpdate(
       { _id: booking_id, school_id },
       { $set: updateData },
-      { new: true }
-    );
-
-    // Update credit log
-    await pupilCreditLogs.findOneAndUpdate(
-      { reference_id: existingBooking._id },
-      { credit_hours: -Number(newCreditUse) },
       { new: true }
     );
 
@@ -460,7 +451,7 @@ exports.updateBookingStatus = async (req, res, next) => {
       });
     }
     console.log('sateu', status)
-    const getbook = await booking.findById({ _id: booking_id });
+    const getbook = await booking.findById({ _id: booking_id }).populate("pupil_id");
     if (!getbook) {
       return res.status(404).json({
         message: 'Booking could not found with this id ',
@@ -474,23 +465,32 @@ exports.updateBookingStatus = async (req, res, next) => {
       })
     }
 
-    if (status === "cancelled") {
-      console.log('inside')
-      const bookingData = await booking
-        .findById(booking_id)
-        .populate("pupil_id");
-
-      console.log('bookingData', bookingData)
-      const remaining =
-        bookingData.pupil_id.remaining_hour + bookingData.credit_use;
-
-      await pupilModel.findByIdAndUpdate(bookingData.pupil_id._id, {
+    if (status === "completed" && getbook.status !== "completed") {
+      const remaining = getbook.pupil_id.remaining_hour - getbook.credit_use;
+      await pupilModel.findByIdAndUpdate(getbook.pupil_id._id, {
         remaining_hour: remaining,
       });
-      const pupil_id = bookingData.pupil_id;
+      await createCreditLog({
+        pupil_id: getbook.pupil_id._id,
+        credit_hours: -Number(getbook.credit_use),
+        reference_id: getbook._id,
+        reference: "booking",
+        school_id,
+        created_by,
+      });
+    } else if (status === "cancelled" && getbook.status === "completed") {
+      console.log('inside')
+      const remaining =
+        getbook.pupil_id.remaining_hour + getbook.credit_use;
+
+      await pupilModel.findByIdAndUpdate(getbook.pupil_id._id, {
+        remaining_hour: remaining,
+      });
+      const pupil_id = getbook.pupil_id._id;
       const createdlog = await createCreditLog({
         pupil_id,
-        credit_hours: Number(bookingData.credit_use),
+        credit_hours: Number(getbook.credit_use),
+        reference_id: getbook._id,
         reference: "booking",
         school_id,
         created_by,
