@@ -3,6 +3,8 @@ const NotificationToken = require("../../models/DS/fcmtokenstore");
 const InstructorMaster = require('../../models/DS/instructor_master.model');
 const NotificationStore = require('../../models/DS/notification_stored');
 const { sendNotification } = require('./message_token_store');
+const MailSend = require('../../utils/MailSend');
+const CourseFormEmailLog = require('../../models/DS/course_form_email_log.model');
 
 exports.createCourseForm = async (req, res) => {
     try {
@@ -248,4 +250,124 @@ exports.assignInstructor = async (req, res) => {
             error: error.message,
         });
     }
+};
+
+exports.sendResourcePack = async (req, res, next) => {
+  try {
+    const { course_form_id } = req.body;
+    const senderId = req.user ? req.user._id : null;
+
+    if (!course_form_id) {
+      return res.status(400).json({ success: false, message: "course_form_id is required." });
+    }
+
+    const form = await CourseForm.findById(course_form_id);
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Course form not found." });
+    }
+
+    if (!form.email) {
+      return res.status(400).json({ success: false, message: "Course form does not have an email address." });
+    }
+
+    const businessName = "Drive4Pass";
+
+    await MailSend.SendResourcePackMail(businessName, form.email, form.name);
+
+    await CourseFormEmailLog.create({
+      course_form_id: form._id,
+      email_type: 'resource_pack',
+      sent_by: senderId,
+      status: 'success'
+    });
+
+    res.status(200).json({ success: true, message: `Resource pack email sent successfully to ${form.email}.` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error sending resource pack", error: err.message });
+  }
+};
+
+exports.sendReviewLink = async (req, res, next) => {
+  try {
+    const { course_form_id, review_link } = req.body;
+    const senderId = req.user ? req.user._id : null;
+
+    if (!course_form_id || !review_link) {
+      return res.status(400).json({ success: false, message: "course_form_id and review_link are required." });
+    }
+
+    const form = await CourseForm.findById(course_form_id);
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Course form not found." });
+    }
+
+    if (!form.email) {
+      return res.status(400).json({ success: false, message: "Course form does not have an email address." });
+    }
+
+    const businessName = "Drive4Pass";
+
+    await MailSend.SendReviewLinkMail(businessName, form.email, form.name, review_link);
+
+    await CourseFormEmailLog.create({
+      course_form_id: form._id,
+      email_type: 'review_link',
+      sent_by: senderId,
+      status: 'success'
+    });
+
+    res.status(200).json({ success: true, message: `Review link email sent successfully to ${form.email}.` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error sending review link", error: err.message });
+  }
+};
+
+exports.sendWelcomeMessage = async (req, res, next) => {
+  try {
+    const { course_form_id } = req.body;
+    const senderId = req.user ? req.user._id : null;
+
+    if (!course_form_id) {
+      return res.status(400).json({ success: false, message: "course_form_id is required." });
+    }
+
+    const form = await CourseForm.findById(course_form_id);
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Course form not found." });
+    }
+
+    if (!form.email) {
+      return res.status(400).json({ success: false, message: "Course form does not have an email address." });
+    }
+
+    const businessName = "Drive4Pass";
+
+    await MailSend.SendWelcomeMessageMail(businessName, form.email, form.name);
+
+    await CourseFormEmailLog.create({
+      course_form_id: form._id,
+      email_type: 'welcome_message',
+      sent_by: senderId,
+      status: 'success'
+    });
+
+    res.status(200).json({ success: true, message: `Welcome message email sent successfully to ${form.email}.` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error sending welcome message", error: err.message });
+  }
+};
+
+exports.getEmailLogs = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const logs = await CourseFormEmailLog.find({ course_form_id: id }).sort({ createdAt: -1 }).populate('sent_by', 'name email');
+    
+    res.status(200).json({
+      success: true,
+      count: logs.length,
+      data: logs
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error fetching email logs", error: err.message });
+  }
 };

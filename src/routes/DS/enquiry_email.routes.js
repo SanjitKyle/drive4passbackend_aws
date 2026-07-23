@@ -95,4 +95,23 @@ router.post('/enquiries/send-review-link', EnquireController.sendReviewLink);
  */
 router.post('/enquiries/send-welcome-message', EnquireController.sendWelcomeMessage);
 
+/**
+ * @swagger
+ * /en/enquiries/{id}/email-logs:
+ *   get:
+ *     summary: Get all email logs for a specific enquiry
+ *     tags: [Enquiry Emails]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Enquiry ID
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.get('/enquiries/:id/email-logs', EnquireController.getEmailLogs);
+
 module.exports = router;

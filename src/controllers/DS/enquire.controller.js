@@ -511,3 +511,18 @@ exports.sendWelcomeMessage = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Error sending welcome message", error: err.message });
   }
 };
+
+exports.getEmailLogs = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const logs = await EnquiryEmailLog.find({ enquiry_id: id }).sort({ createdAt: -1 }).populate('sent_by', 'name email');
+    
+    res.status(200).json({
+      success: true,
+      count: logs.length,
+      data: logs
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error fetching email logs", error: err.message });
+  }
+};
