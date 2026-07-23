@@ -6,7 +6,6 @@ const {
   sendWelcomeMessage,
   getEmailLogs
 } = require('../../controllers/DS/course_form.controller');
-const { isAuthenticatedUser } = require('../../middleware/auth');
 
 /**
  * @swagger
