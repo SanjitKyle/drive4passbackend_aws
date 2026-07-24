@@ -26,7 +26,7 @@ const FranchiseEnquirySchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['New', 'Contacted', 'Under review', 'Waiting list', 'Converted to Instructor', 'No response'],
+        enum: ['New', 'Contacted', 'Under review', 'Waiting list', 'Converted to instructor', 'No response'],
         default: 'New'
     }
 }, {

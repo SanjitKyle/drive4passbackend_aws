@@ -27,7 +27,8 @@ const AdiTrainingFormSchema = new mongoose.Schema({
             'Passed to Office',
             'Quoted / Price Given',
             'Call Back Later',
-            'Lost'
+            'Lost',
+            'Converted to Instructor'
         ]
     },
     franchise_status: {
