@@ -48,7 +48,7 @@ const FranchiseEnquiryController = require('../../controllers/DS/franchise_enqui
  *                   - Contacted
  *                   - Under review
  *                   - Waiting list
- *                   - Converted to instructor
+ *                   - Converted to Instructor
  *                   - No response
  *     responses:
  *       200:
@@ -133,7 +133,7 @@ router.get('/franchise-enquiries/:id', FranchiseEnquiryController.getFranchiseEn
  *                   - Contacted
  *                   - Under review
  *                   - Waiting list
- *                   - Converted to instructor
+ *                   - Converted to Instructor
  *                   - No response
  *     responses:
  *       200:
@@ -192,7 +192,7 @@ router.post('/franchise-enquiries/delete/:id', FranchiseEnquiryController.delete
  *                   - Contacted
  *                   - Under review
  *                   - Waiting list
- *                   - Converted to instructor
+ *                   - Converted to Instructor
  *                   - No response
  *     responses:
  *       200:
