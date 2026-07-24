@@ -76,7 +76,7 @@ const InstructorMasterSchema = new mongoose.Schema(
     }],
     transmission_type: {
       type: String,
-      enum: ["Manual", "Automatic", "Both"],
+      enum: ["Manual", "Automatic", "Both", ""],
       default: "Both",
     },
     
