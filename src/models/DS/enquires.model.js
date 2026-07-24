@@ -70,14 +70,12 @@ const EnquireSchema = new mongoose.Schema({
         ref: 'area'
     },
 
-    package_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'package_master'
+    duration: {
+       type:String
     },
 
-    pricing_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'PriceMaster'
+    price: {
+      type:String
     },
 
     enquiry_status:{

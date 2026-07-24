@@ -25,6 +25,12 @@ const CourseFormSchema = new mongoose.Schema({
     postcode: {
         type: String
     },
+    duration:{
+        type:String
+    },
+    price:{
+        type:String
+    },
     additional_message: {
         type: String
     },
