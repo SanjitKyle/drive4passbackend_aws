@@ -22,7 +22,10 @@ exports.createEnquiry = async (req, res) => {
       lesson_preference_time,
       preferred_start_date,
       preferred_contact_method,
-      additional_message
+      additional_message,
+      area_id,
+      package_id,
+      pricing_id
     } = payload;
 
   
@@ -43,6 +46,9 @@ console.log(req.body);
       preferred_contact_method,
       source,
       additional_message,
+      area_id,
+      package_id,
+      pricing_id,
     });
     res.status(200).json({
       success: true,

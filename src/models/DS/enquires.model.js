@@ -65,6 +65,21 @@ const EnquireSchema = new mongoose.Schema({
         type: String
     },
 
+    area_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'area'
+    },
+
+    package_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'package_master'
+    },
+
+    pricing_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PriceMaster'
+    },
+
     enquiry_status:{
         type:String,
         enum:['confirmed','not confirmed'],
