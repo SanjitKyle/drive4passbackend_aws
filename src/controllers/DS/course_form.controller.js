@@ -74,10 +74,10 @@ exports.getCourseFormById = async (req, res) => {
 exports.updateCourseForm = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, email, phone, course_interested, previous_lessons, transmission, postcode, additional_message } = req.body;
+        const { name, email, duration,price,phone, course_interested, previous_lessons, transmission, postcode, additional_message } = req.body;
         
         const formData = {
-            name, email, phone, course_interested, previous_lessons, transmission, postcode, additional_message
+            name, email, phone,duration,price, course_interested, previous_lessons, transmission, postcode, additional_message
         };
 
         Object.keys(formData).forEach(key => {
