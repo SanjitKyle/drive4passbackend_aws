@@ -99,7 +99,8 @@ app.use('/api/ds', authMiddleware, [
   require('./routes/DS/transfer.routes.js'),
   require('./routes/DS/subarea.routes.js'),
   require('./routes/DS/franchise_fees.routes.js'),
-  require('./routes/DS/pdi_fees_amount.routes')
+  require('./routes/DS/pdi_fees_amount.routes'),
+  require('./routes/DS/internal_note.routes.js')
 ]);
 
 
