@@ -72,10 +72,10 @@ exports.getAdiTrainingFormById = async (req, res) => {
 exports.updateAdiTrainingForm = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, email, phone, training_status, franchise_status, postcode, message } = req.body;
+        const { name, email, phone, training_status, franchise_status, postcode, message,status } = req.body;
         
         const formData = {
-            name, email, phone, training_status, franchise_status, postcode, message
+            name, email, phone, training_status, franchise_status, postcode, message,status
         };
 
         Object.keys(formData).forEach(key => {
