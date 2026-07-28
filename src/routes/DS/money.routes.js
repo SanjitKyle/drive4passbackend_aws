@@ -35,6 +35,8 @@ const MoneyController = require("../../controllers/DS/money.controller");
  *                 enum: [cash, card, upi, net_banking, wallet]
  *               amount:
  *                 type: number
+ *               sell_id:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Money added successfully
@@ -73,6 +75,8 @@ router.post("/money", MoneyController.addMoney);
  *                 enum: [cash, card, upi, net_banking, wallet]
  *               amount:
  *                 type: number
+ *               sell_id:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Money updated successfully

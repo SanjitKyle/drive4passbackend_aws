@@ -38,31 +38,31 @@ const SaleSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "area",
     },
-
     deleted_at: {
       type: Date,
       default: null,
     },
-
     // Audit fields
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
     },
-
     updated_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       default: null,
     },
-
     deleted_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       default: null,
     },
-
+    status:{
+      type:String,
+      enum:['Paid','Unpaid'],
+      default:'Unpaid'
+    }
   },
   {
     timestamps: true,

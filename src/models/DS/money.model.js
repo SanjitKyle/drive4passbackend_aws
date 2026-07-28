@@ -32,6 +32,10 @@ const MoneySchema = new mongoose.Schema({
         required: true,
         min: 0
     },
+    sell_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Sale'
+    },
     deleted_at: {
         type: Date,
         default: null,

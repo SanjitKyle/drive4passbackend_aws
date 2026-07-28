@@ -29,6 +29,7 @@ exports.createBooking = async (req, res, next) => {
       private_notes,
       pupil_summary,
       status,
+      sell_id
     } = req.body;
 
     // =============================
@@ -154,6 +155,7 @@ exports.createBooking = async (req, res, next) => {
       credit_use,
       status: status || "booking_request",
       created_by,
+      sell_id
     });
 
     if (!createdBooking) {
@@ -227,7 +229,6 @@ exports.createBooking = async (req, res, next) => {
     next(error);
   }
 };
-
 exports.getBooking = async (req, res, next) => {
   try {
     const instructor_id = req.params.id;
@@ -247,7 +248,8 @@ exports.getBooking = async (req, res, next) => {
         deleted_at: null,
       })
       .populate("pupil_id")
-      .populate("instructor_id");
+      .populate("instructor_id")
+      .populate("sell_id");
     const bookingsData = bookings.filter(
       (b) => b.pupil_id !== null
     );
@@ -262,7 +264,6 @@ exports.getBooking = async (req, res, next) => {
     next(error);
   }
 };
-
 exports.getAllBookings = async (req, res, next) => {
   try {
     const school_id = req.user.school_id;
@@ -273,7 +274,8 @@ exports.getAllBookings = async (req, res, next) => {
         deleted_at: null,
       })
       .populate("pupil_id")
-      .populate("instructor_id");
+      .populate("instructor_id")
+      .populate("sell_id");
     const bookingsData = bookings.filter(
       (b) => b.pupil_id !== null
     );
@@ -314,6 +316,7 @@ exports.updateBooking = async (req, res, next) => {
       "private_notes",
       "pupil_summary",
       "payment_type",
+      "sell_id"
     ];
 
     const updateData = {};
@@ -415,6 +418,7 @@ exports.getPupilsBookings = async (req, res, next) => {
         deleted_at: null // ✅ secure verification
       })
       .populate("instructor_id", "name email mobile")
+      .populate("sell_id")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
@@ -427,7 +431,6 @@ exports.getPupilsBookings = async (req, res, next) => {
     next(error);
   }
 };
-
 exports.updateBookingStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
@@ -478,7 +481,7 @@ exports.updateBookingStatus = async (req, res, next) => {
         school_id,
         created_by,
       });
-    } else if (status === "cancelled" && getbook.status === "completed") {
+    } else if (status === "cancelled" && getbook.status !== "cancelled") {
       console.log('inside')
       const remaining =
         getbook.pupil_id.remaining_hour + getbook.credit_use;

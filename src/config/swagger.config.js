@@ -59,7 +59,7 @@ const swaggerDefinition = {
     { name: 'Auth', description: 'Authentication related endpoints' },
   ],
   components: {
-    // schemas: require('../utils/swaggerSchemas'),
+    schemas: require('../utils/swaggerSchemas'),
     securitySchemes: {
       bearerAuth: {
         type: 'http',

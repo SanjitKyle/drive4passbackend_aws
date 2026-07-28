@@ -1,13 +1,14 @@
 const Money = require("../../models/DS/money.model");
 const pupilModel = require("../../models/DS/pupil.model");
-const instructorModel = require("../../models/DS/instructor_master.model");
-
+const instructorModel = require("../../models/DS/instructor_master.model")
+const sell = require("../../models/DS/sale.model");
+const Pricing = require("../../models/DS/price_master.model")
 exports.addMoney = async (req, res, next) => {
     try {
-        const { pupil_id, instructor_id, payment_method, amount } = req.body;
+        const { pupil_id, instructor_id, payment_method, amount, sell_id } = req.body;
         const school_id = req.user.school_id;
+        const loggedInUserId = req.user._id;
 
-       const loggedInUserId = req.user._id; // Assuming req.user contains the authenticated user's info
         // ✅ Validation
         if (!pupil_id || !amount) {
             return res.status(400).json({
@@ -43,14 +44,47 @@ exports.addMoney = async (req, res, next) => {
             }
         }
 
+        // 1. Create the money record first
         const created = await Money.create({
             school_id,
             pupil_id,
             instructor_id: instructor_id || null,
             payment_method,
             amount,
+            sell_id,
             created_by: loggedInUserId
         });
+
+        if (!created) {
+            return res.status(403).json({
+                message: "could not add money",
+                success: false
+            });
+        }
+
+        // 2. ONLY AFTER money is created, update the sale paid/unpaid status
+        if (sell_id) {
+            const sellProfile = await sell.findById(sell_id);
+            if (sellProfile) {
+                const packageId = sellProfile.package_id;
+
+                // Fetch the total money paid so far for this sell_id by this pupil
+                // Since the money record is already created, this will include the new payment
+                const existingPayments = await Money.find({ pupil_id, sell_id, deleted_at: null });
+                const totalPaidNow = existingPayments.reduce((sum, payment) => sum + payment.amount, 0);
+
+                // Fetch pricing info
+                const pricing = await Pricing.findOne({ package_id: packageId });
+
+                if (pricing) {
+                    if (totalPaidNow >= pricing.price) {
+                        await sell.findByIdAndUpdate(sell_id, { status: "Paid" }, { new: true });
+                    } else {
+                        await sell.findByIdAndUpdate(sell_id, { status: "Unpaid" }, { new: true });
+                    }
+                }
+            }
+        }
 
         return res.status(201).json({
             success: true,
@@ -69,7 +103,17 @@ exports.editMoney = async (req, res, next) => {
         const money_id = req.params.id;
         const school_id = req.user.school_id;
 
-        const { payment_method, amount, instructor_id } = req.body;
+        const { payment_method, amount, instructor_id, sell_id } = req.body;
+
+        const existingMoney = await Money.findOne({ _id: money_id, school_id });
+        if (!existingMoney) {
+            return res.status(404).json({
+                success: false,
+                message: "Money record not found"
+            });
+        }
+
+        const old_sell_id = existingMoney.sell_id;
 
         const updateData = {};
 
@@ -98,17 +142,46 @@ exports.editMoney = async (req, res, next) => {
             updateData.instructor_id = instructor_id;
         }
 
+        if (sell_id !== undefined) {
+            updateData.sell_id = sell_id;
+        }
+
+        // 1. Update the money record first securely using validated data
         const updated = await Money.findOneAndUpdate(
             { _id: money_id, school_id },
             { $set: updateData },
             { new: true }
         );
 
-        if (!updated) {
-            return res.status(404).json({
-                success: false,
-                message: "Money record not found"
-            });
+        // Helper function to robustly recalculate paid/unpaid status for a sale
+        const recalculateSaleStatus = async (target_sell_id, target_pupil_id) => {
+            if (!target_sell_id) return;
+            const sellProfile = await sell.findById(target_sell_id);
+            if (!sellProfile) return;
+            
+            const packageId = sellProfile.package_id;
+            const allPayments = await Money.find({ pupil_id: target_pupil_id, sell_id: target_sell_id, deleted_at: null });
+            const totalPaid = allPayments.reduce((sum, payment) => sum + payment.amount, 0);
+            
+            const pricing = await Pricing.findOne({ package_id: packageId });
+            if (pricing) {
+                if (totalPaid >= pricing.price) {
+                    await sell.findByIdAndUpdate(target_sell_id, { status: "Paid" }, { new: true });
+                } else {
+                    await sell.findByIdAndUpdate(target_sell_id, { status: "Unpaid" }, { new: true });
+                }
+            }
+        };
+
+        const current_sell_id = updated.sell_id;
+        const current_pupil_id = updated.pupil_id;
+
+        // 2. Recalculate status for the current sale attached to this money record
+        await recalculateSaleStatus(current_sell_id, current_pupil_id);
+
+        // 3. If sell_id was changed to a different sale, recalculate status for the old sale too (since it lost money)
+        if (old_sell_id && String(old_sell_id) !== String(current_sell_id)) {
+            await recalculateSaleStatus(old_sell_id, current_pupil_id);
         }
 
         return res.status(200).json({
@@ -138,10 +211,10 @@ exports.getInstructorMoney = async (req, res, next) => {
         const records = await Money.find({
             instructor_id,
             school_id,
-            deleted_at:null
+            deleted_at: null
         })
-        .populate("pupil_id", "full_name email").populate("instructor_id","name email")
-        .sort({ createdAt: -1 });
+            .populate("pupil_id", "full_name email").populate("instructor_id", "name email").populate("sell_id")
+            .sort({ createdAt: -1 });
 
         if (!records || records.length === 0) {
             return res.status(404).json({
@@ -163,25 +236,23 @@ exports.getInstructorMoney = async (req, res, next) => {
     }
 };
 
-exports.getPupilMoney=async(req,res,next)=>{
-    try{
-        const pupilId=req.params.id;
-        const school_id=req.user.school_id;
-         if(!pupilId)
-         {
+exports.getPupilMoney = async (req, res, next) => {
+    try {
+        const pupilId = req.params.id;
+        const school_id = req.user.school_id;
+        if (!pupilId) {
             return res.status(404).json({
-                message:"Provide Pupil id "
+                message: "Provide Pupil id "
             })
-         }
+        }
 
-         const money=await Money.find({pupil_id:pupilId,school_id, deleted_at:null}).populate('pupil_id').populate('instructor_id');
-         return res.status(201).json(money)
+        const money = await Money.find({ pupil_id: pupilId, school_id, deleted_at: null }).populate('pupil_id').populate('instructor_id').populate('sell_id');
+        return res.status(201).json(money)
 
-    }catch(error)
-    {
+    } catch (error) {
         return res.status(501).json({
-            message:"Internal server error",
-            success:false 
+            message: "Internal server error",
+            success: false
         })
     }
 }
