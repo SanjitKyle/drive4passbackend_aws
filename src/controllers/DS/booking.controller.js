@@ -461,12 +461,7 @@ exports.updateBookingStatus = async (req, res, next) => {
         sucess: false
       })
     }
-    if (getbook.status === 'cancelled') {
-      return res.status(403).json({
-        message: "Booking is already cancelled",
-        sucess: false
-      })
-    }
+
 
     if (status === "completed" && getbook.status !== "completed") {
       const remaining = getbook.pupil_id.remaining_hour - getbook.credit_use;
