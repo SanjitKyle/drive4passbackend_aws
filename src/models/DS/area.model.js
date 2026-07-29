@@ -8,20 +8,10 @@ const AreaSchema = new mongoose.Schema({
         required: true
     },
     name: { type: String, required: true, maxLength: 255 },
-    code: { type: String, required: true, maxLength: 10 },
-    address: { type: String, required: true, maxLength: 255 },
-    contact_email: {
-        type: String,
-        required: true,
-        lowercase: true,
-        trim: true,
-        match: [/\S+@\S+\.\S+/, 'Please enter a valid email address.']
-    },
+    areacode: { type: String, required: true, maxLength: 10 },
+    
    
-    phone: { type: String, required: true, maxLength: 20, minLength: [10, 'Please enter a valid mobile number'] },
-    branch_currency: { type: String, required: true },
-    currency_symbol: { type: String, required: true },
-    branch_timezones: { type: String, required: true },
+
     status: {
         type: String,
         enum: ['Active', 'Deactive'],

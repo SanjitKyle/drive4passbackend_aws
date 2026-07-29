@@ -18,28 +18,14 @@ exports.createBranch = async (req, res, next) => {
 
     const {
       name,
-      code,
-      address,
-      postcode,
-      contact_email,
-      phone,
-      status,
-      branch_currency,
-      currency_symbol,
-      branch_timezones
+      areacode,
+      status
     } = req.body;
 
     const dataObj = {
       name,
-      code,
-      address,
-      postcode,
-      contact_email,
-      phone,
+      areacode,
       status,
-      branch_currency,
-      currency_symbol,
-      branch_timezones,
       school_id,
       created_by: userId,
       last_updated_by: userId

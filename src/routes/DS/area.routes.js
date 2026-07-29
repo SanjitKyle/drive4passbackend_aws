@@ -23,31 +23,12 @@ const AreaController = require('../../controllers/DS/area.controller');
  *             type: object
  *             required:
  *               - name
- *               - code
- *               - address
- *               - contact_email
- *               - phone
- *               - branch_currency
- *               - currency_symbol
- *               - branch_timezones
+ *               - areacode
  *               - status
  *             properties:
  *               name:
  *                 type: string
- *               code:
- *                 type: string
- *               address:
- *                 type: string
- *               contact_email:
- *                 type: string
- *                 format: email
- *               phone:
- *                 type: string
- *               branch_currency:
- *                 type: string
- *               currency_symbol:
- *                 type: string
- *               branch_timezones:
+ *               areacode:
  *                 type: string
  *               status:
  *                 type: string
@@ -113,20 +94,7 @@ router.get('/areas/:id', AreaController.getBranchById);
  *             properties:
  *               name:
  *                 type: string
- *               code:
- *                 type: string
- *               address:
- *                 type: string
- *               contact_email:
- *                 type: string
- *                 format: email
- *               phone:
- *                 type: string
- *               branch_currency:
- *                 type: string
- *               currency_symbol:
- *                 type: string
- *               branch_timezones:
+ *               areacode:
  *                 type: string
  *               status:
  *                 type: string
