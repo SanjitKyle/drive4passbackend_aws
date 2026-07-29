@@ -19,6 +19,10 @@ const PupilSchema = new mongoose.Schema(
       ref: "area",
       required: false,
     },
+    postcode: {
+      type: String,
+      trim: true,
+    },
     total_packages_price: {
       type: Number,
     },

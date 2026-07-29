@@ -22,7 +22,7 @@ exports.createPupil = async (req, res, next) => {
       throw new Error("Unauthorized");
     }
 
-    const { full_name, phone, email, instructor_id, area_id, package_id } =
+    const { full_name, phone, email, instructor_id, area_id, package_id, postcode } =
       req.body;
 
     if (!full_name || !phone || !email || !instructor_id || !package_id) {
@@ -30,7 +30,7 @@ exports.createPupil = async (req, res, next) => {
     }
 
     const created_by = req.user._id;
-
+    
     // Instructor
     const instructor =
       await InstructorMaster.findById(instructor_id).session(session);
@@ -61,6 +61,7 @@ exports.createPupil = async (req, res, next) => {
           instructor_id,
           area_id,
           package_id,
+          postcode,
           total_credit: totalHour,
           remaining_hour: totalHour, // Initialize remaining hours
           school_id,
@@ -162,7 +163,7 @@ exports.updatePupil = async (req, res, next) => {
       email,
       instructor_id,
       area_id,
-
+      postcode,
       active,
       progress,
     } = req.body);
@@ -173,6 +174,7 @@ exports.updatePupil = async (req, res, next) => {
       email,
       instructor_id,
       area_id,
+      postcode,
       active,
       progress
     }

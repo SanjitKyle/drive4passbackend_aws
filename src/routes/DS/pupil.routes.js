@@ -39,6 +39,8 @@ const PupilController = require("../../controllers/DS/pupil.controller");
  *                 type: string
  *               area_id:
  *                 type: string
+ *               postcode:
+ *                 type: string
  *               package_id:
  *                 type: string
  *     responses:
@@ -109,6 +111,8 @@ router.get("/pupils/:id", PupilController.getPupilById);
  *               instructor_id:
  *                 type: string
  *               area_id:
+ *                 type: string
+ *               postcode:
  *                 type: string
  *               package_id:
  *                 type: string
