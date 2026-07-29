@@ -335,8 +335,14 @@ exports.updateBooking = async (req, res, next) => {
       updateData.start_time ||
       updateData.end_time
     ) {
-      const booking_date =
-        updateData.booking_date || existingBooking.booking_date;
+      let booking_date = updateData.booking_date || existingBooking.booking_date;
+      
+      // If it's a Date object from the DB, convert it to YYYY-MM-DD format
+      if (booking_date instanceof Date) {
+        booking_date = booking_date.toISOString().split("T")[0];
+      } else if (typeof booking_date === "string" && booking_date.includes("T")) {
+        booking_date = booking_date.split("T")[0];
+      }
 
       const start_time =
         updateData.start_time || existingBooking.start_time;
@@ -350,10 +356,10 @@ exports.updateBooking = async (req, res, next) => {
         end_time
       );
 
-      if (newCreditUse <= 0) {
+      if (!newCreditUse || isNaN(newCreditUse) || newCreditUse <= 0) {
         return res.status(400).json({
           success: false,
-          message: "Invalid time range",
+          message: "Invalid time range or format. Ensure start_time and end_time are valid.",
         });
       }
 

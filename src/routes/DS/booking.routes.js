@@ -21,7 +21,49 @@ const BookingController = require("../../controllers/DS/booking.controller");
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Booking'
+ *             type: object
+ *             required:
+ *               - pupil_id
+ *               - instructor_id
+ *               - booking_date
+ *               - start_time
+ *               - end_time
+ *             properties:
+ *               title:
+ *                 type: string
+ *               repeat:
+ *                 type: string
+ *                 enum: [repeat, norepeat]
+ *               gearbox:
+ *                 type: string
+ *                 enum: [manual, automatic]
+ *               pickup:
+ *                 type: string
+ *               dropoff:
+ *                 type: string
+ *               private_notes:
+ *                 type: string
+ *               pupil_summary:
+ *                 type: string
+ *               sell_id:
+ *                 type: string
+ *               pupil_id:
+ *                 type: string
+ *               instructor_id:
+ *                 type: string
+ *               booking_date:
+ *                 type: string
+ *                 format: date
+ *                 example: "2026-08-01"
+ *               start_time:
+ *                 type: string
+ *                 example: "10:00"
+ *               end_time:
+ *                 type: string
+ *                 example: "12:00"
+ *               status:
+ *                 type: string
+ *                 enum: [booking_request, pending, booked, completed, cancelled]
  *     responses:
  *       201:
  *         description: Booking created successfully
@@ -123,7 +165,43 @@ router.get(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Booking'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               repeat:
+ *                 type: string
+ *                 enum: [repeat, norepeat]
+ *               gearbox:
+ *                 type: string
+ *                 enum: [manual, automatic]
+ *               pickup:
+ *                 type: string
+ *               dropoff:
+ *                 type: string
+ *               private_notes:
+ *                 type: string
+ *               pupil_summary:
+ *                 type: string
+ *               sell_id:
+ *                 type: string
+ *               pupil_id:
+ *                 type: string
+ *               instructor_id:
+ *                 type: string
+ *               booking_date:
+ *                 type: string
+ *                 format: date
+ *                 example: "2026-08-01"
+ *               start_time:
+ *                 type: string
+ *                 example: "10:00"
+ *               end_time:
+ *                 type: string
+ *                 example: "12:00"
+ *               status:
+ *                 type: string
+ *                 enum: [booking_request, pending, booked, completed, cancelled]
  *     responses:
  *       200:
  *         description: Booking updated successfully
