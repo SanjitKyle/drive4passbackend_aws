@@ -51,9 +51,9 @@ exports.getAllAway = async (req, res, next) => {
         const school_id = req.user.school_id;
 
         const aways = await Away.find({ school_id })
-            .populate('school_id')
+           
             .populate('instructor_id')
-            .populate('created_by');
+         
 
         res.status(200).json({
             status: true,
@@ -72,9 +72,9 @@ exports.getAwayById = async (req, res, next) => {
         const { id } = req.params;
 
         const away = await Away.findOne({ _id: id, school_id })
-            .populate('school_id')
+           
             .populate('instructor_id')
-            .populate('created_by');
+         
 
         if (!away) {
             return res.status(404).json({ status: false, message: 'Away record not found.' });
@@ -97,9 +97,9 @@ exports.getAwayByInstructor = async (req, res, next) => {
         const { instructorId } = req.params;
 
         const aways = await Away.find({ instructor_id: instructorId, school_id })
-            .populate('school_id')
+  
             .populate('instructor_id')
-            .populate('created_by');
+   
 
         res.status(200).json({
             status: true,
