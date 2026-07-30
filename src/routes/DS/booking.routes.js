@@ -212,4 +212,25 @@ router.post(
 );
 
 
+/**
+ * @swagger
+ * /ds/bookings/delete/{id}:
+ *   post:
+ *     summary: Delete a booking
+ *     tags: [Booking]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Booking ID
+ *     responses:
+ *       200:
+ *         description: Booking deleted successfully
+ *       404:
+ *         description: Booking not found
+ */
+router.post("/bookings/delete/:id", BookingController.deleteBooking);
+
 module.exports = router;

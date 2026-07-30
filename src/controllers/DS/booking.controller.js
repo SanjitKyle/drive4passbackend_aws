@@ -525,3 +525,36 @@ exports.updateBookingStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.deleteBooking = async (req, res, next) => {
+  try {
+    const booking_id = req.params.id;
+    const school_id = req.user.school_id;
+
+    const existingBooking = await booking.findOne({
+      _id: booking_id,
+      school_id,
+      deleted_at: null,
+    });
+
+    if (!existingBooking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    existingBooking.deleted_at = new Date();
+    existingBooking.deleted_by = req.user._id;
+
+    await existingBooking.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Booking deleted successfully",
+    });
+  } catch (error) {
+    console.log("Delete Booking Error:", error);
+    next(error);
+  }
+};
