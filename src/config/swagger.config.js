@@ -38,6 +38,7 @@ const swaggerDefinition = {
   tags: [
     { name: 'Booking', description: 'Booking management' },
     { name: 'Gap', description: 'Gap schedule management' },
+    { name: 'Away', description: 'Instructor Away/Leave management' },
     { name: 'Sale', description: 'Sale management' },
     { name: 'Pupil', description: 'Pupil management' },
     { name: 'PriceMaster', description: 'Price Master management' },

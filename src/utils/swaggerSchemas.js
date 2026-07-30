@@ -42,6 +42,7 @@ const PupilCreditLogs = require('../models/DS/pupil_credit_logs.model');
 const Sale = require('../models/DS/sale.model');
 const WeeklyAvailability = require('../models/DS/weekly_availability');
 const Gap = require('../models/DS/gap');
+const Away = require('../models/DS/away.model');
 
 const schemas = {
     School: m2s(School),
@@ -84,7 +85,8 @@ const schemas = {
     PupilCreditLogs: m2s(PupilCreditLogs),
     Sale: m2s(Sale),
     WeeklyAvailability: m2s(WeeklyAvailability),
-    Gap: m2s(Gap)
+    Gap: m2s(Gap),
+    Away: m2s(Away)
 };
 
 module.exports = schemas;
