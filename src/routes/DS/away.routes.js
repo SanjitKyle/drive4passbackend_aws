@@ -163,4 +163,33 @@ router.post('/away/:id', AwayController.updateAway);
 router.post('/away/delete/:id', AwayController.deleteAway);
 router.get('/away/delete/:id', AwayController.deleteAway);
 
+/**
+ * @swagger
+ * /ds/away/update-color/{id}:
+ *   post:
+ *     summary: Update away color
+ *     tags: [Away]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - color
+ *             properties:
+ *               color:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Away color updated successfully
+ */
+router.post('/away/update-color/:id', AwayController.updateAwayColor);
+
 module.exports = router;

@@ -112,4 +112,40 @@ router.get(
 //   WorkingDayController.GetSingleDayData
 // );
 
+/**
+ * @swagger
+ * /ds/instructor-working-days/update-color:
+ *   post:
+ *     summary: Update color for a specific working day
+ *     tags: [InstructorWorkingDay]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - instructor_id
+ *               - day_of_week
+ *               - color
+ *             properties:
+ *               instructor_id:
+ *                 type: string
+ *               day_of_week:
+ *                 type: number
+ *               color:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Color updated successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: Working day not found
+ */
+router.post(
+  "/instructor-working-days/update-color",
+  WorkingDayController.updateWorkingDayColor
+);
+
 module.exports = router;

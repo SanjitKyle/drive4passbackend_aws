@@ -160,3 +160,33 @@ exports.deleteAway = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.updateAwayColor = async (req, res, next) => {
+    try {
+        const school_id = req.user.school_id;
+        const { id } = req.params;
+        const { color } = req.body;
+
+        if (!color) {
+            return res.status(400).json({ status: false, message: 'Color is required' });
+        }
+
+        const away = await Away.findOneAndUpdate(
+            { _id: id, school_id },
+            { $set: { color } },
+            { new: true }
+        );
+
+        if (!away) {
+            return res.status(404).json({ status: false, message: 'Away record not found' });
+        }
+
+        res.status(200).json({
+            status: true,
+            message: 'Away color updated successfully',
+            away
+        });
+    } catch (err) {
+        next(err);
+    }
+};

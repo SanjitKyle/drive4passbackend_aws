@@ -233,4 +233,34 @@ router.post(
  */
 router.post("/bookings/delete/:id", BookingController.deleteBooking);
 
+/**
+ * @swagger
+ * /ds/bookings/update-color/{id}:
+ *   post:
+ *     summary: Update booking color
+ *     tags: [Booking]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Booking ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - color
+ *             properties:
+ *               color:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Booking color updated successfully
+ */
+router.post("/bookings/update-color/:id", BookingController.updateBookingColor);
+
 module.exports = router;

@@ -29,6 +29,10 @@ const GapSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "InstructorMaster",
         default: null
+    },
+    color: {
+        type: String,
+        default: null,
     }
 }, { timestamps: true });
 

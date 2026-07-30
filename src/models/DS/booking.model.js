@@ -74,6 +74,10 @@ const BookingSchema = new mongoose.Schema({
         type: Date,
         default: null,
     },
+    color: {
+        type: String,
+        default: null,
+    },
     // Audit fields
     created_by: {
         type: mongoose.Schema.Types.ObjectId,

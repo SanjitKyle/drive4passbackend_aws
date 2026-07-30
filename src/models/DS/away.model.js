@@ -40,6 +40,10 @@ const AwaySchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
             default: null
+        },
+        color: {
+            type: String,
+            default: null,
         }
     },
     { timestamps: true }

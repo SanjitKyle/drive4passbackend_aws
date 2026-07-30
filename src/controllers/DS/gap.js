@@ -442,3 +442,33 @@ exports.convertGapToBooking = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.updateGapColor = async (req, res, next) => {
+    try {
+        const school_id = req.user.school_id;
+        const { id } = req.params;
+        const { color } = req.body;
+
+        if (!color) {
+            return res.status(400).json({ status: false, message: 'Color is required' });
+        }
+
+        const gap = await Gap.findOneAndUpdate(
+            { _id: id, school_id },
+            { $set: { color } },
+            { new: true }
+        );
+
+        if (!gap) {
+            return res.status(404).json({ status: false, message: 'Gap not found' });
+        }
+
+        res.status(200).json({
+            status: true,
+            message: 'Gap color updated successfully',
+            gap
+        });
+    } catch (err) {
+        next(err);
+    }
+};

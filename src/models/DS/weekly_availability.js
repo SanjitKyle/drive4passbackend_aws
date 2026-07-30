@@ -10,7 +10,8 @@ const daySchema = new mongoose.Schema({
   enabled: { type: Boolean, default: false },
   workStart: { type: String },
   workEnd: { type: String },
-  breaks: [breakSchema]
+  breaks: [breakSchema],
+  color: { type: String, default: null }
 });
 
 const instructorAvailabilitySchema = new mongoose.Schema({

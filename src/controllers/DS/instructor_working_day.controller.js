@@ -58,7 +58,7 @@ exports.upsertWeeklySchedule = async (req, res, next) => {
           filter: { school_id, instructor_id, day_of_week: Number(day) },
           update: {
             $setOnInsert: { school_id, instructor_id, day_of_week: Number(day) },
-            $set: { is_working: data.is_working ? 1 : 0, start_time: data.is_working ? data.workStart : null, end_time: data.is_working ? data.workEnd : null, break_start: data.breakStart || null, break_end: data.breakEnd || null }
+            $set: { is_working: data.is_working ? 1 : 0, start_time: data.is_working ? data.workStart : null, end_time: data.is_working ? data.workEnd : null, break_start: data.breakStart || null, break_end: data.breakEnd || null, color: data.color || null }
           },
           upsert: true
         }
@@ -152,8 +152,33 @@ exports.GetSingleDayData = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Got data successfully',
-      data: { day: dayNumber, enabled: workingDay.is_working === 1, workStart: workingDay.start_time, workEnd: workingDay.end_time, breakStart: workingDay.break_start, breakEnd: workingDay.break_end }
+      data: { day: dayNumber, enabled: workingDay.is_working === 1, workStart: workingDay.start_time, workEnd: workingDay.end_time, breakStart: workingDay.break_start, breakEnd: workingDay.break_end, color: workingDay.color }
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateWorkingDayColor = async (req, res, next) => {
+  try {
+    const { instructor_id, day_of_week, color } = req.body;
+    const school_id = req.user.school_id;
+
+    if (!instructor_id || !day_of_week || !color) {
+      return res.status(400).json({ success: false, message: "instructor_id, day_of_week, and color are required" });
+    }
+
+    const updated = await InstructorWorkingDay.findOneAndUpdate(
+      { school_id, instructor_id, day_of_week: Number(day_of_week) },
+      { $set: { color } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Working day record not found" });
+    }
+
+    return res.status(200).json({ success: true, message: "Color updated successfully", data: updated });
   } catch (error) {
     next(error);
   }

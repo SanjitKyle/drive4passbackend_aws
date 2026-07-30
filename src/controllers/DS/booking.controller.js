@@ -558,3 +558,34 @@ exports.deleteBooking = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.updateBookingColor = async (req, res, next) => {
+  try {
+    const { color } = req.body;
+    const booking_id = req.params.id;
+    const school_id = req.user.school_id;
+
+    if (!color) {
+      return res.status(400).json({ success: false, message: "Color is required" });
+    }
+
+    const updated = await booking.findOneAndUpdate(
+      { _id: booking_id, school_id },
+      { $set: { color } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Booking color updated successfully",
+      data: updated,
+    });
+  } catch (error) {
+    console.log("Update Booking Color Error:", error);
+    next(error);
+  }
+};

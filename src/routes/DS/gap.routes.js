@@ -227,4 +227,33 @@ router.get('/gaps/delete/:id', GapController.deleteGap);
  */
 router.post('/gaps/convert-to-booking/:id', GapController.convertGapToBooking);
 
+/**
+ * @swagger
+ * /ds/gaps/update-color/{id}:
+ *   post:
+ *     summary: Update gap color
+ *     tags: [Gap]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - color
+ *             properties:
+ *               color:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Gap color updated successfully
+ */
+router.post('/gaps/update-color/:id', GapController.updateGapColor);
+
 module.exports = router;
