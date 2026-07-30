@@ -7,7 +7,7 @@ exports.createAway = async (req, res, next) => {
         const school_id = req.user.school_id;
         const created_by = req.user._id;
 
-        const { instructor_id, date, start_time, end_time, reason, status } = req.body;
+        const { instructor_id, date, start_time, end_time, reason, status, color } = req.body;
 
         if (!instructor_id || !start_time || !end_time) {
             return res.status(400).json({
@@ -32,7 +32,8 @@ exports.createAway = async (req, res, next) => {
             end_time,
             reason,
             status: status || 'Active',
-            created_by
+            created_by,
+            color
         });
 
         res.status(201).json({
@@ -155,36 +156,6 @@ exports.deleteAway = async (req, res, next) => {
         res.status(200).json({
             status: true,
             message: 'Away record deleted successfully.'
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
-exports.updateAwayColor = async (req, res, next) => {
-    try {
-        const school_id = req.user.school_id;
-        const { id } = req.params;
-        const { color } = req.body;
-
-        if (!color) {
-            return res.status(400).json({ status: false, message: 'Color is required' });
-        }
-
-        const away = await Away.findOneAndUpdate(
-            { _id: id, school_id },
-            { $set: { color } },
-            { new: true }
-        );
-
-        if (!away) {
-            return res.status(404).json({ status: false, message: 'Away record not found' });
-        }
-
-        res.status(200).json({
-            status: true,
-            message: 'Away color updated successfully',
-            away
         });
     } catch (err) {
         next(err);

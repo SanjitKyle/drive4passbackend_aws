@@ -158,28 +158,3 @@ exports.GetSingleDayData = async (req, res, next) => {
     next(error);
   }
 };
-
-exports.updateWorkingDayColor = async (req, res, next) => {
-  try {
-    const { instructor_id, day_of_week, color } = req.body;
-    const school_id = req.user.school_id;
-
-    if (!instructor_id || !day_of_week || !color) {
-      return res.status(400).json({ success: false, message: "instructor_id, day_of_week, and color are required" });
-    }
-
-    const updated = await InstructorWorkingDay.findOneAndUpdate(
-      { school_id, instructor_id, day_of_week: Number(day_of_week) },
-      { $set: { color } },
-      { new: true }
-    );
-
-    if (!updated) {
-      return res.status(404).json({ success: false, message: "Working day record not found" });
-    }
-
-    return res.status(200).json({ success: true, message: "Color updated successfully", data: updated });
-  } catch (error) {
-    next(error);
-  }
-};

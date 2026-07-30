@@ -32,7 +32,7 @@ const WorkingDayController = require('../../controllers/DS/instructor_working_da
  *                 type: object
  *                 description: An object representing the working days of the week
  *                 example:
- *                   "1": { "is_working": true, "workStart": "09:00", "workEnd": "17:00", "breakStart": "13:00", "breakEnd": "14:00" }
+ *                   "1": { "is_working": true, "workStart": "09:00", "workEnd": "17:00", "breakStart": "13:00", "breakEnd": "14:00", "color": "#ff0000" }
  *                   "2": { "is_working": true, "workStart": "09:00", "workEnd": "17:00", "breakStart": "13:00", "breakEnd": "14:00" }
  *                   "3": { "is_working": false }
  *     responses:
@@ -111,41 +111,5 @@ router.get(
 
 //   WorkingDayController.GetSingleDayData
 // );
-
-/**
- * @swagger
- * /ds/instructor-working-days/update-color:
- *   post:
- *     summary: Update color for a specific working day
- *     tags: [InstructorWorkingDay]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - instructor_id
- *               - day_of_week
- *               - color
- *             properties:
- *               instructor_id:
- *                 type: string
- *               day_of_week:
- *                 type: number
- *               color:
- *                 type: string
- *     responses:
- *       200:
- *         description: Color updated successfully
- *       400:
- *         description: Missing required fields
- *       404:
- *         description: Working day not found
- */
-router.post(
-  "/instructor-working-days/update-color",
-  WorkingDayController.updateWorkingDayColor
-);
 
 module.exports = router;

@@ -40,6 +40,8 @@ const GapController = require('../../controllers/DS/gap');
  *                 example: "1 hour 30 mins"
  *               instructor:
  *                 type: string
+ *               color:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Gap created successfully
@@ -129,6 +131,8 @@ router.get('/gaps/:id', GapController.getGapById);
  *               duration:
  *                 type: string
  *               instructor:
+ *                 type: string
+ *               color:
  *                 type: string
  *     responses:
  *       200:
@@ -226,34 +230,5 @@ router.get('/gaps/delete/:id', GapController.deleteGap);
  *         description: Gap, pupil, or instructor not found
  */
 router.post('/gaps/convert-to-booking/:id', GapController.convertGapToBooking);
-
-/**
- * @swagger
- * /ds/gaps/update-color/{id}:
- *   post:
- *     summary: Update gap color
- *     tags: [Gap]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - color
- *             properties:
- *               color:
- *                 type: string
- *     responses:
- *       200:
- *         description: Gap color updated successfully
- */
-router.post('/gaps/update-color/:id', GapController.updateGapColor);
 
 module.exports = router;

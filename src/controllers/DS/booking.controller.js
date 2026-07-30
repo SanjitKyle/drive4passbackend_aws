@@ -29,7 +29,8 @@ exports.createBooking = async (req, res, next) => {
       private_notes,
       pupil_summary,
       status,
-      sell_id
+      sell_id,
+      color
     } = req.body;
 
     // =============================
@@ -155,7 +156,8 @@ exports.createBooking = async (req, res, next) => {
       credit_use,
       status: status || "booking_request",
       created_by,
-      sell_id
+      sell_id,
+      color
     });
 
     if (!createdBooking) {
@@ -316,7 +318,8 @@ exports.updateBooking = async (req, res, next) => {
       "private_notes",
       "pupil_summary",
       "payment_type",
-      "sell_id"
+      "sell_id",
+      "color"
     ];
 
     const updateData = {};
@@ -555,37 +558,6 @@ exports.deleteBooking = async (req, res, next) => {
     });
   } catch (error) {
     console.log("Delete Booking Error:", error);
-    next(error);
-  }
-};
-
-exports.updateBookingColor = async (req, res, next) => {
-  try {
-    const { color } = req.body;
-    const booking_id = req.params.id;
-    const school_id = req.user.school_id;
-
-    if (!color) {
-      return res.status(400).json({ success: false, message: "Color is required" });
-    }
-
-    const updated = await booking.findOneAndUpdate(
-      { _id: booking_id, school_id },
-      { $set: { color } },
-      { new: true }
-    );
-
-    if (!updated) {
-      return res.status(404).json({ success: false, message: "Booking not found" });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Booking color updated successfully",
-      data: updated,
-    });
-  } catch (error) {
-    console.log("Update Booking Color Error:", error);
     next(error);
   }
 };
