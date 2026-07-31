@@ -139,7 +139,7 @@ exports.EditTransfer=async(req, res)=>{
             return res.status(201).json({
                 message:"Transfer updated successfully",
                 success:true,
-                data:result
+                data: result
             })
         }
         return res.status(401).json({
@@ -162,7 +162,7 @@ exports.deleteTransfer=async(req,res)=>{
             return res.status(201).json({
                 message:"Transfer deleted successfully",
                 success:true,
-                data:result
+                data: result
             })
         }
         return res.status(404).json({
