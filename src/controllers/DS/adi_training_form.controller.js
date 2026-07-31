@@ -230,7 +230,9 @@ exports.assignInstructor = async (req, res) => {
                     message: notificationBody,
                     receiver_id: instructor_id,
                     sender_id: senderId,
-                    route: "/adi-enquiries"
+                    route: "/adi-enquiries",
+                    pupil_id: req.params.id,
+                    purpose: 'enquiry'
                 });
             }
         }

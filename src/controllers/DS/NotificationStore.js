@@ -51,6 +51,30 @@ exports.markAsRead = async (req, res) => {
         })
     }
 }
+
+exports.MarkAsReadByUserId = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const updateAll = await noficationStore.updateMany({ receiver_id: id }, { is_read: true }, { new: true });
+        if (!updateAll) {
+            return res.status(404).json({
+                message: "No notifications found for this user",
+                success: false
+            })
+        }
+        return res.status(200).json({
+            message: "User notifications marked as read successfully",
+            success: true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false,
+            error: error.message
+        })
+    }
+}
+
 exports.GetNotificationByUserId = async (req, res) => {
     try {
         const id = req.params.id;

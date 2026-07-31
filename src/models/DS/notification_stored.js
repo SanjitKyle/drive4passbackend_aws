@@ -22,6 +22,15 @@ const NotificationStored=new mongoose.Schema({
         type:Boolean,
         enum:[true, false],
         default:false
+    },
+    pupil_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false
+    },
+    purpose: {
+        type: String,
+        enum: ['transfer', 'enquiry'],
+        required: false
     }
 
      

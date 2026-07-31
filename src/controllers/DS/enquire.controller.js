@@ -6,6 +6,7 @@ const NotificationStore = require('../../models/DS/notification_stored');
 const { sendNotification } = require('./message_token_store');
 const MailSend = require('../../utils/MailSend');
 const EnquiryEmailLog = require('../../models/DS/enquiry_email_log.model');
+
 exports.createEnquiry = async (req, res) => {
   try {
     const payload = req.body.form_fields || req.body;
@@ -302,7 +303,9 @@ exports.assignInstructor = async (req, res) => {
           message: notificationBody,
           receiver_id: instructor_id,
           sender_id: senderId,
-          route: "/enquiries"
+          route: "/enquiries",
+          pupil_id: req.params.id,
+          purpose: 'enquiry'
         })
 
       }

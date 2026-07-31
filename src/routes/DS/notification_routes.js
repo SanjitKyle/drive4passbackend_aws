@@ -185,5 +185,32 @@ router.get(
     "/notification/user/:id",
     NotificationStore.GetNotificationByUserId
 );
+/**
+ * @swagger
+ * /ds/notification/mark-as-read/{id}:
+ *   post:
+ *     summary: Mark all notifications for a specific user ID as read
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID (e.g. Instructor ID)
+ *     responses:
+ *       200:
+ *         description: Notifications marked as read successfully
+ *       404:
+ *         description: No notifications found
+ *       500:
+ *         description: Internal server error
+ */
+router.post(
+    "/notification/mark-as-read/:id",
+    NotificationStore.MarkAsReadByUserId
+);
 
 module.exports = router;

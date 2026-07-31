@@ -2,6 +2,7 @@ const Transfer = require('../../models/DS/transfer.model');
 const NotificationToken = require("../../models/DS/fcmtokenstore");
 const { sendNotification } = require('./message_token_store');
 const pupilModel = require('../../models/DS/pupil.model');
+const NotificationStore = require('../../models/DS/notification_stored');
 
 // Create Transfer
 exports.createTransfer = async (req, res, next) => {
@@ -29,6 +30,18 @@ exports.createTransfer = async (req, res, next) => {
             body: `${pupulProfile?.full_name} has been transferred to you.`,
             data: { route: "/enquiries" }
         });
+        
+        if (responsetogetnotifaction) {
+            await NotificationStore.create({
+                message: `${pupulProfile?.full_name} has been transferred to you.`,
+                receiver_id: transfer_to,
+                sender_id: transfer_from,
+                redirect_url: "/enquiries",
+                pupil_id: pupil_id,
+                purpose: 'transfer'
+            });
+        }
+
         console.log('error to send notifications', responsetogetnotifaction)
         return res.status(201).json({
             success: true,
