@@ -1,53 +1,4 @@
-// const express = require("express");
-// const router = express.Router();
 
-// const NotificationRoute = require("../../controllers/DS/message_token_store");
-// const NotificationStore = require("../../controllers/DS/NotificationStore")
-// /**
-//  * @swagger
-//  * tags:
-//  *   name: Notifications
-//  *   description: Firebase notification and FCM token management
-//  */
-
-// /**
-//  * @swagger
-//  * /ds/message/save-token:
-//  *   post:
-//  *     summary: Save or update FCM token for logged-in user
-//  *     tags: [Notifications]
-//  *     security:
-//  *       - bearerAuth: []
-//  *     requestBody:
-//  *       required: true
-//  *       content:
-//  *         application/json:
-//  *           schema:
-//  *             type: object
-//  *             required:
-//  *               - token
-//  *             properties:
-//  *               token:
-//  *                 type: string
-//  *                 description: Firebase Cloud Messaging token
-//  *               platform:
-//  *                 type: string
-//  *                 enum: [android, ios, web]
-//  *                 description: Device platform
-//  *     responses:
-//  *       200:
-//  *         description: Token saved successfully
-//  *       401:
-//  *         description: Unauthorized
-//  *       500:
-//  *         description: Server error
-//  */
-// router.post("/message/save-token", NotificationRoute.saveToken);
-
-
-
-
-// module.exports = router;
 
 const express = require("express");
 const router = express.Router();
@@ -179,6 +130,60 @@ router.post(
     NotificationStore.markAsRead
 );
 
+/**
+ * @swagger
+ * /ds/notification/delete/{id}:
+ *   post:
+ *     summary: Delete a notification by ID
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Notification ID
+ *     responses:
+ *       200:
+ *         description: Notification deleted successfully
+ *       403:
+ *         description: Could not delete notification
+ *       500:
+ *         description: Internal server error
+ */
+router.post(
+    "/notification/delete/:id",
+    NotificationStore.DeleteNotification
+);
 
+/**
+ * @swagger
+ * /ds/notification/user/{id}:
+ *   get:
+ *     summary: Get notifications by user ID (instructor, pupil, admin, etc.)
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: Notifications fetched successfully
+ *       404:
+ *         description: No notifications found
+ *       500:
+ *         description: Internal server error
+ */
+router.get(
+    "/notification/user/:id",
+    NotificationStore.GetNotificationByUserId
+);
 
 module.exports = router;
