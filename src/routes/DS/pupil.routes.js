@@ -43,6 +43,8 @@ const PupilController = require("../../controllers/DS/pupil.controller");
  *                 type: string
  *               package_id:
  *                 type: string
+ *               gearbox:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Pupil created successfully
@@ -120,6 +122,8 @@ router.get("/pupils/:id", PupilController.getPupilById);
  *                 type: number
  *               progress:
  *                 type: number
+ *               gearbox:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Pupil updated successfully

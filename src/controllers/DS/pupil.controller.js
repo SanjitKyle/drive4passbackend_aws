@@ -167,6 +167,7 @@ exports.updatePupil = async (req, res, next) => {
       postcode,
       active,
       progress,
+      gearbox,
     } = req.body);
 
     const datatosend = {
@@ -177,7 +178,8 @@ exports.updatePupil = async (req, res, next) => {
       area_id,
       postcode,
       active,
-      progress
+      progress,
+      gearbox
     }
 
     if (Object.keys(data).length === 0) {
