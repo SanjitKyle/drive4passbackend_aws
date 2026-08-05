@@ -131,7 +131,7 @@ exports.createPupil = async (req, res, next) => {
     if (String(instructor_id) !== String(created_by)) {
       const userToken = await notificationToken.findOne({ user: instructor_id });
       if (userToken && userToken.token) {
-        await sendNotification.sendNotification({
+        await sendNotification({
           token: userToken.token,
           title: "New Pupil Assigned",
           body: `A new pupil ${full_name} has been assigned to you.`,
