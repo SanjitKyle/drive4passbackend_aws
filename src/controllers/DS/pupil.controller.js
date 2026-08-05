@@ -138,7 +138,7 @@ exports.createPupil = async (req, res, next) => {
           data: { type: "new_pupil", pupil_id: String(pupil_id) }
         });
         await notificationStore.create({
-          message:  `A new pupil ${full_name} has been assigned to you.`,
+          message:  `A new pupil  name :${full_name} has been assigned to you.`,
           receiver_id: instructor_id,
           sender_id: created_by,
         });
