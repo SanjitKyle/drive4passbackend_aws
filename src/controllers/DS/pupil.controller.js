@@ -11,7 +11,7 @@ const pupil_credit_logsModel = require("../../models/DS/pupil_credit_logs.model"
 const saleModel = require("../../models/DS/sale.model");
 const pupil_creditsModel = require("../../models/DS/pupil_credits.model");
 const moneyModel = require("../../models/DS/money.model");
-const sendNotification = require("../../utils/notification");
+const { sendNotification } = require("./message_token_store");
 const notificationToken = require("../../models/DS/fcmtokenstore");
 const notificationStore = require("../../models/DS/notification_stored")
 // CREATE a new pupil
