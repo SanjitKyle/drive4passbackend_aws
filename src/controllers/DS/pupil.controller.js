@@ -11,6 +11,9 @@ const pupil_credit_logsModel = require("../../models/DS/pupil_credit_logs.model"
 const saleModel = require("../../models/DS/sale.model");
 const pupil_creditsModel = require("../../models/DS/pupil_credits.model");
 const moneyModel = require("../../models/DS/money.model");
+const sendNotification = require("../../utils/notification");
+const notificationToken = require("../../models/DS/fcmtokenstore");
+const notificationStore = require("../../models/DS/notification_stored")
 // CREATE a new pupil
 exports.createPupil = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -22,7 +25,7 @@ exports.createPupil = async (req, res, next) => {
       throw new Error("Unauthorized");
     }
 
-    const { full_name, phone, email, instructor_id, area_id, package_id, postcode , gearbox} =
+    const { full_name, phone, email, instructor_id, area_id, package_id, postcode, gearbox } =
       req.body;
 
     if (!full_name || !phone || !email || !instructor_id || !package_id) {
@@ -30,7 +33,8 @@ exports.createPupil = async (req, res, next) => {
     }
 
     const created_by = req.user._id;
-    
+
+
     // Instructor
     const instructor =
       await InstructorMaster.findById(instructor_id).session(session);
@@ -122,6 +126,24 @@ exports.createPupil = async (req, res, next) => {
 
     if (!creditResult.success) {
       throw new Error(creditResult.message);
+    }
+
+    if (String(instructor_id) !== String(created_by)) {
+      const userToken = await notificationToken.findOne({ user: instructor_id });
+      if (userToken && userToken.token) {
+        await sendNotification.sendNotification({
+          token: userToken.token,
+          title: "New Pupil Assigned",
+          body: `A new pupil ${full_name} has been assigned to you.`,
+          data: { type: "new_pupil", pupil_id: String(pupil_id) }
+        });
+        await NotificationStore.create({
+          message:  `A new pupil ${full_name} has been assigned to you.`,
+          receiver_id: instructor_id,
+          sender_id: created_by,
+        });
+      }
+
     }
 
     await session.commitTransaction();
