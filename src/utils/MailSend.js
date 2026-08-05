@@ -19,13 +19,13 @@ exports.SingUpMail = async (businessName, email, password, name) => {
 
   try {
     const info = await transporter.sendMail({
-      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      from: `"Drive4pass Team" <${process.env.EMAIL}>`,
       to: email,
-      subject: `Thank You for Signing Up as an Instructor with ${businessName}🚗`,
+      subject: `Thank You for Signing Up as an Instructor with Drive4pass`,
       text: `
 Hello ${name},
 
-Thank you for signing up as an instructor with ${businessName}.
+Thank you for signing up as an instructor with Drive4pass. 
 
 Your instructor account has been created successfully. Below are your login details:
 
@@ -34,11 +34,11 @@ Email:${email}
 
 Our team is currently reviewing your profile. Once verification is complete, we’ll contact you with the next steps.
 
-Thank you for choosing to work with ${businessName}.
+Thank you for choosing to work with Drive4pass.
 We look forward to working with you.
 
 Warm regards,
-${businessName} Team
+Drive4pass Team
             `,
       html: `
 <!DOCTYPE html>
@@ -55,7 +55,7 @@ ${businessName} Team
           <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; padding:0; border-radius:0;">
             <tr>
               <td style="padding:40px 30px;">
-                <h2 style="color:#1f2937; margin-top:0; font-size:22px;">Welcome to ${businessName} 🚗</h2>
+                <h2 style="color:#1f2937; margin-top:0; font-size:22px;">Welcome to Drive4pass 🚗</h2>
                 <p style="color:#374151; font-size:15px; margin-bottom:20px;">Hi <strong>${name}</strong>,</p>
                 <p style="color:#374151; font-size:15px; line-height:1.6; margin-bottom:25px;">
                   Thank you for signing up as an instructor with <strong style="color:#dc2626;">DRIVE <span style="color:#16a34a;">4</span> PASS</strong>. We're happy to inform you that your instructor account has been created successfully.
@@ -94,7 +94,7 @@ ${businessName} Team
                 
                 <p style="color:#374151; font-size:15px; margin:0; line-height:1.6;">
                   Warm regards,<br/>
-                  <strong>${businessName} Team</strong><br/>
+                  <strong>Drive4pass Team</strong><br/>
                   <span style="font-size:13px; color:#6b7280;">Tel: 0333 335 7000 | Web: <a href="http://www.drive4pass.co.uk" style="color:#dc2626; text-decoration:none;">www.drive4pass.co.uk</a></span>
                 </p>
               </td>
@@ -109,7 +109,7 @@ ${businessName} Team
                 <p style="color:#ffffff; margin:0 0 5px 0; font-size:11px; opacity:0.9;">Authorised & regulated by the DVSA</p>
                 <p style="color:#ffffff; margin:0 0 20px 0; font-size:11px; opacity:0.9;">Co no 15780539</p>
                 
-                <p style="color:#ffffff; margin:0 0 5px 0; font-size:10px; opacity:0.8;">All rights reserved ${businessName}</p>
+                <p style="color:#ffffff; margin:0 0 5px 0; font-size:10px; opacity:0.8;">All rights reserved Drive4pass</p>
                 <p style="color:#ffffff; margin:0; font-size:10px; opacity:0.8;">This is an automated email. Please do not reply to this email.</p>
               </td>
             </tr>
@@ -146,9 +146,9 @@ exports.InstructorConfirmMail = async (businessName, email, password, name) => {
 
   try {
     const info = await transporter.sendMail({
-      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      from: `"Drive4pass  Team" <${process.env.EMAIL}>`,
       to: email,
-      subject: `Congratulations! You’re Approved as an Instructor with ${businessName} 🚗`,
+      subject: `Congratulations! You’re Approved as an Instructor with Drive4pass 🚗`,
 
       // ✅ TEXT VERSION
       text: `
@@ -156,7 +156,7 @@ Hello ${name},
 
 Congratulations! 🎉
 
-We’re pleased to inform you that your profile has been successfully reviewed and you are now APPROVED as an instructor with ${businessName}.
+We’re pleased to inform you that your profile has been successfully reviewed and you are now APPROVED as an instructor with Drive4pass.
 
 Your instructor account is active. You can log in using the details below:
 
@@ -173,7 +173,7 @@ Welcome aboard!
 We look forward to working with you.
 
 Warm regards,
-${businessName} Team
+Drive4pass Team
             `,
 
       // ✅ HTML VERSION
@@ -225,7 +225,7 @@ ${businessName} Team
                 <div style="border-left:4px solid #eab308; background-color:#fefce8; padding:20px; margin-bottom:30px;">
                   <p style="margin:0 0 10px 0; font-weight:bold; color:#1f2937; font-size:15px;">What's next?</p>
                   <p style="margin:0; color:#374151; font-size:14px; line-height:1.5;">
-                    Your instructor account is now active. You can now begin accepting students, managing your schedule, and delivering lessons through ${businessName}.
+                    Your instructor account is now active. You can now begin accepting students, managing your schedule, and delivering lessons through Drive4pass.
                   </p>
                 </div>
 
@@ -233,7 +233,7 @@ ${businessName} Team
                 
                 <p style="color:#374151; font-size:15px; margin:0; line-height:1.6;">
                   Welcome aboard!<br/>
-                  <strong>${businessName} Team</strong><br/>
+                  <strong>Drive4pass Team</strong><br/>
                   <span style="font-size:13px; color:#6b7280;">Tel: 0333 335 7000 | Web: <a href="http://www.drive4pass.co.uk" style="color:#dc2626; text-decoration:none;">www.drive4pass.co.uk</a></span>
                 </p>
               </td>
@@ -248,7 +248,7 @@ ${businessName} Team
                 <p style="color:#ffffff; margin:0 0 5px 0; font-size:11px; opacity:0.9;">Authorised & regulated by the DVSA</p>
                 <p style="color:#ffffff; margin:0 0 20px 0; font-size:11px; opacity:0.9;">Co no 15780539</p>
                 
-                <p style="color:#ffffff; margin:0 0 5px 0; font-size:10px; opacity:0.8;">All rights reserved ${businessName}</p>
+                <p style="color:#ffffff; margin:0 0 5px 0; font-size:10px; opacity:0.8;">All rights reserved Drive4pass</p>
                 <p style="color:#ffffff; margin:0; font-size:10px; opacity:0.8;">This is an automated email. Please do not reply to this email.</p>
               </td>
             </tr>
@@ -285,10 +285,10 @@ exports.SendResourcePackMail = async (businessName, email, name) => {
 
   try {
     const info = await transporter.sendMail({
-      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      from: `"Drive4pass Team" <${process.env.EMAIL}>`,
       to: email,
       subject: `Your Students Resource Pack — Drive 4 Pass`,
-      text: `Hello ${name},\n\nWell done on completing your first lesson with DRIVE 4 PASS!\n\nAs promised, here is your Students Resource Pack.\n\nKeep up the great work!\n\nWarm regards,\n${businessName} Team`,
+      text: `Hello ${name},\n\nWell done on completing your first lesson with DRIVE 4 PASS!\n\nAs promised, here is your Students Resource Pack.\n\nKeep up the great work!\n\nWarm regards,\nDrive4pass Team`,
       attachments: [
         {
           filename: 'Students_Resource_Pack.pdf',
@@ -386,10 +386,10 @@ exports.SendReviewLinkMail = async (businessName, email, name) => {
 
   try {
     const info = await transporter.sendMail({
-      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      from: `"Drive4pass Team" <${process.env.EMAIL}>`,
       to: email,
       subject: `How did we do? We value your feedback! ⭐`,
-      text: `Hello ${name},\n\nWe hope you had a fantastic experience with DRIVE 4 PASS!\n\nPlease take a minute to leave us a review on Google (https://g.page/r/Cff2QFoITfWXEBM/review) or Trustindex (https://www.trustindex.io/reviews/www.drive4pass.co.uk).\n\nThank you for your support!\n\nWarm regards,\n${businessName} Team`,
+      text: `Hello ${name},\n\nWe hope you had a fantastic experience with DRIVE 4 PASS!\n\nPlease take a minute to leave us a review on Google (https://g.page/r/Cff2QFoITfWXEBM/review) or Trustindex (https://www.trustindex.io/reviews/www.drive4pass.co.uk).\n\nThank you for your support!\n\nWarm regards,\nDrive4pass Team`,
       html: `
 <!DOCTYPE html>
 <html>
@@ -491,10 +491,10 @@ exports.SendWelcomeMessageMail = async (businessName, email, name) => {
 
   try {
     const info = await transporter.sendMail({
-      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      from: `"Drive4pass Team" <${process.env.EMAIL}>`,
       to: email,
       subject: `Welcome to Drive 4 Pass — your first lesson info 🎉`,
-      text: `Hello ${name},\n\nThank you for booking your driving lessons with DRIVE 4 PASS.\n\nPlease be ready for your first lesson!\n\nWarm regards,\n${businessName} Team`,
+      text: `Hello ${name},\n\nThank you for booking your driving lessons with DRIVE 4 PASS.\n\nPlease be ready for your first lesson!\n\nWarm regards,\nDrive4pass Team`,
       attachments: [
         {
           filename: 'Welcome_To_Drive4Pass.pdf',

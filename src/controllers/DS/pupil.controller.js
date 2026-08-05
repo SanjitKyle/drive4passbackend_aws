@@ -22,7 +22,7 @@ exports.createPupil = async (req, res, next) => {
       throw new Error("Unauthorized");
     }
 
-    const { full_name, phone, email, instructor_id, area_id, package_id, postcode } =
+    const { full_name, phone, email, instructor_id, area_id, package_id, postcode , gearbox} =
       req.body;
 
     if (!full_name || !phone || !email || !instructor_id || !package_id) {
@@ -62,6 +62,7 @@ exports.createPupil = async (req, res, next) => {
           area_id,
           package_id,
           postcode,
+          gearbox,
           total_credit: totalHour,
           remaining_hour: totalHour, // Initialize remaining hours
           school_id,
@@ -230,7 +231,6 @@ exports.getAllPupils = async (req, res, next) => {
     const school_id = req.user.school_id;
     const pupils = await Pupil.find({ deleted_at: null, school_id })
       .populate("instructor_id")
-      .populate("school_id")
       .populate("package_id")
       .populate("area_id")
       .populate("created_by")
@@ -256,7 +256,6 @@ exports.getPupilById = async (req, res, next) => {
 
     const pupil = await Pupil.findOne({ _id: id, deleted_at: null, school_id })
       .populate("instructor_id")
-      .populate("school_id")
       .populate("package_id")
       .populate("area_id")
       .populate("created_by")

@@ -36,20 +36,21 @@ const PupilSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "package_master",
     },
-
+    gearbox: {
+      type: String,
+      enum: ["Manual", "Automatic"],
+      default: "Manual"
+    },
     email: {
       type: String,
       required: true,
       trim: true,
-
       lowercase: true,
       match: [/.+\@.+\..+/, "Please fill a valid email address"],
     },
-
     instructor_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "InstructorMaster",
-   
     },
 
     school_id: {
