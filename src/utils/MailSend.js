@@ -70,7 +70,7 @@ ${businessName} Team
                       <td style="padding:4px 0; color:#374151; font-size:14px;">${email}</td>
                     </tr>
                     <tr>
-                      <td style="padding:4px 0; color:#374151; font-size:14px;"><strong>Temporary Password:</strong></td>
+                      <td style="padding:4px 0; color:#374151; font-size:14px;"><strong>Once you are Approved You will get </strong></td>
                       <td style="padding:4px 0; color:#374151; font-size:14px;">${password}</td>
                     </tr>
                   </table>

@@ -273,7 +273,7 @@ exports.instructorSingup = async (req, res, next) => {
     });
 
     if (instructorCreate) {
-      await SingUpMail("Drive4pass", email, "******", name);
+      await SingUpMail("Drive4pass", email, password, name);
     }
 
     res.status(201).json({
