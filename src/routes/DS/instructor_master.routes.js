@@ -337,8 +337,8 @@ router.get("/instructor-masters/status/:id",auth, InstructorController.confirmIn
  */
 router.post(
   "/instructors/notify-credentials/:id",
-  validateToken,
-  InstructorMasterController.notifyInstructorCredentials
+  auth,
+  InstructorController.notifyInstructorCredentials
 );
 
 module.exports = router;
