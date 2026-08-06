@@ -135,6 +135,24 @@ exports.updateInstructor = async (req, res, next) => {
       });
     }
 
+    // Sync important fields with UserModel (Auth)
+    if (updatedData.password || updatedData.email || updatedData.name || updatedData.mobile) {
+      const instructorUser = await UserModel.findOne({ email: updated.email, role: "instructor" });
+      
+      if (instructorUser) {
+        if (updatedData.name) instructorUser.name = updatedData.name;
+        if (updatedData.email) instructorUser.email = updatedData.email;
+        if (updatedData.mobile) instructorUser.mobile = updatedData.mobile;
+        
+        if (updatedData.password) {
+          const hashedPassword = await bcrypt.hash(updatedData.password, 10);
+          instructorUser.password = hashedPassword;
+        }
+
+        await instructorUser.save();
+      }
+    }
+
     return res.status(200).json({
       success: true,
       message: "Instructor updated successfully",
