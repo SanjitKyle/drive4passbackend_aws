@@ -312,5 +312,33 @@ router.get("/instructor-masters/delete/:id", InstructorController.deleteInstruct
  */
 router.get("/instructor-masters/status/:id",auth, InstructorController.confirmInstructor)
 
+/**
+ * @swagger
+ * /ds/instructors/notify-credentials/{id}:
+ *   post:
+ *     summary: Notify instructor of their credentials via email
+ *     tags: [Instructor]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Instructor ID
+ *     responses:
+ *       200:
+ *         description: Notification sent successfully
+ *       400:
+ *         description: Instructor lacks email or password
+ *       404:
+ *         description: Instructor not found
+ */
+router.post(
+  "/instructors/notify-credentials/:id",
+  validateToken,
+  InstructorMasterController.notifyInstructorCredentials
+);
 
 module.exports = router;

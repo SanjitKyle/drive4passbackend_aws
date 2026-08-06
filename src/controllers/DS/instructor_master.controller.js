@@ -3,12 +3,15 @@ const InstructorMaster = require('../../models/DS/instructor_master.model');
 const nodemailer = require("nodemailer");
 const GeneratePassword = require('../../utils/GeneratePassword');
 const SchoolModel = require('../../models/school.model');
-const { SingUpMail, InstructorConfirmMail } = require('../../utils/MailSend');
+const { SingUpMail, InstructorConfirmMail, InstructorUpdateProfileMail } = require('../../utils/MailSend');
 const InstructorWorkingDay = require('../../models/DS/instructor_working_day.model')
 const UserModel = require('../../models/user.model');
 const bcrypt = require("bcryptjs");
 const fs = require("fs");
 const uploadToS3 = require('../../utils/s3_upload');
+const { sendNotification } = require("./message_token_store");
+const notificationToken = require("../../models/DS/fcmtokenstore");
+const notificationStore = require("../../models/DS/notification_stored");
 exports.createInstructor = async (data) => {
   try {
     // Create instructor
@@ -279,5 +282,64 @@ exports.confirmInstructor = async (req, res) => {
       message: "Internal server error",
       success: false,
     });
+  }
+};
+
+exports.notifyInstructorCredentials = async (req, res, next) => {
+  try {
+    const instructorId = req.params.id;
+    const school_id = req.user.school_id;
+
+    // Fetch instructor with password included
+    const instructor = await InstructorMaster.findOne({ _id: instructorId, school_id }).select("+password");
+
+    if (!instructor) {
+      return res.status(404).json({
+        success: false,
+        message: "Instructor not found",
+      });
+    }
+
+    if (!instructor.email || !instructor.password) {
+      return res.status(400).json({
+        success: false,
+        message: "Instructor does not have an email or password configured",
+      });
+    }
+
+    const school = await SchoolModel.findById(school_id);
+    const businessName =  "Drive4pass";
+
+    await InstructorUpdateProfileMail(businessName, instructor.email, instructor.password, instructor.name);
+
+    // Push notification logic
+    const created_by = req.user._id;
+    const notificationMessage = `Your login credentials have been updated by the administrator.`;
+    
+    // Find device token
+    const userToken = await notificationToken.findOne({ user: instructorId });
+    if (userToken && userToken.token) {
+      await sendNotification({
+        token: userToken.token,
+        title: "Profile Updated",
+        body: notificationMessage,
+        data: { type: "profile_update" }
+      });
+    }
+    
+    // Store notification in database
+    await notificationStore.create({
+      message: notificationMessage,
+      receiver_id: instructorId,
+      sender_id: created_by,
+      route: "/profile"
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Credentials notification sent successfully",
+    });
+  } catch (error) {
+    next(error);
   }
 };

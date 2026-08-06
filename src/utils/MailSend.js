@@ -604,3 +604,30 @@ exports.SendWelcomeMessageMail = async (businessName, email, name) => {
     throw error;
   }
 };
+
+exports.InstructorUpdateProfileMail = async (businessName, email, password, name) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_APP_PASS,
+    },
+    tls: { rejectUnauthorized: false },
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      to: email,
+      subject: `Your Login Details Have Been Updated - ${businessName}`,
+      text: `Hello ${name},\n\nYour instructor profile has been updated. Here are your new login details:\nEmail: ${email}\nPassword: ${password}\n\nWarm regards,\n${businessName} Team`,
+      html: `<p>Hello ${name},</p><p>Your instructor profile has been updated. Here are your new login details:</p><ul><li><strong>Email:</strong> ${email}</li><li><strong>Password:</strong> ${password}</li></ul><br><p>Warm regards,<br>${businessName} Team</p>`
+    });
+    console.log("Instructor profile update email sent:", info.messageId);
+    return info;
+  } catch (error) {
+    console.error("InstructorUpdateProfileMail error:", error);
+  }
+};
