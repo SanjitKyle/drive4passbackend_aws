@@ -136,8 +136,8 @@ exports.updateInstructor = async (req, res, next) => {
     }
 
     // Sync important fields with UserModel (Auth)
-    if (updatedData.password || updatedData.email || updatedData.name || updatedData.mobile) {
-      const instructorUser = await UserModel.findOne({ email: updated.email, role: "instructor" });
+    if (updated.instructor_user_id && (updatedData.password || updatedData.email || updatedData.name || updatedData.mobile)) {
+      const instructorUser = await UserModel.findById(updated.instructor_user_id);
       
       if (instructorUser) {
         if (updatedData.name) instructorUser.name = updatedData.name;
