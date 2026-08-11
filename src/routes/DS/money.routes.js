@@ -32,7 +32,7 @@ const MoneyController = require("../../controllers/DS/money.controller");
  *                 type: string
  *               payment_method:
  *                 type: string
- *                 enum: ["BACS", "Cash", "Cheque", "Card", "Apple Pay", "PayPal"]
+ *                 enum: ["BACS", "Wallet", "Cash", "Cheque", "Card", "Apple Pay", "PayPal"]
  *               amount:
  *                 type: number
  *               sell_id:
