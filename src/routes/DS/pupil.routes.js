@@ -151,4 +151,35 @@ router.post("/pupils/:id", PupilController.updatePupil);
  */
 router.get("/pupils/delete/:id", PupilController.deletePupil);
 
+/**
+ * @swagger
+ * /ds/pupils/regenerate-invitation:
+ *   post:
+ *     summary: Regenerate invitation code for a pupil and send email
+ *     tags: [Pupil]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - pupil_id
+ *             properties:
+ *               pupil_id:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Invite code regenerated and email sent
+ *       400:
+ *         description: pupil_id is required
+ *       404:
+ *         description: Pupil not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/pupils/regenerate-invitation", PupilController.reGenerateInviteCode);
+
 module.exports = router;

@@ -31,10 +31,10 @@ exports.createPupil = async (req, res, next) => {
     const { full_name, phone, email, instructor_id, area_id, package_id, postcode, gearbox } =
       req.body;
 
-      const userExists=await UserModel.findOne({email:email}).session(session);
-      if(userExists){
-        throw new Error("Email already exists.");
-      }
+    const userExists = await UserModel.findOne({ email: email }).session(session);
+    if (userExists) {
+      throw new Error("Email already exists.");
+    }
 
     if (!full_name || !phone || !email || !instructor_id || !package_id) {
       throw new Error("Missing required fields.");
@@ -94,7 +94,7 @@ exports.createPupil = async (req, res, next) => {
     console.log("pupil", pupil);
 
     // send mail to pupil for invition code 
-    await PupilInvitationMail(email, pupil[0].full_name,invite_code);
+    await PupilInvitationMail(email, pupil[0].full_name, invite_code);
 
     // Get pricing
     const pricingData = await price_masterModel
@@ -394,7 +394,7 @@ exports.AcceptInvitation = async (req, res, next) => {
       err.status = 400;
       return next(err);
     }
-    
+
     if (!password) {
       const err = new Error("Password is required");
       err.status = 400;
@@ -431,3 +431,28 @@ exports.AcceptInvitation = async (req, res, next) => {
   }
 };
 
+exports.reGenerateInviteCode = async (req, res, next) => {
+  try {
+    const { pupil_id } = req.body;
+    if (!pupil_id) {
+
+      return res.status(400).json({ success: false, message: "pupil_id is required" });
+    }
+
+    const pupil = await Pupil.findOne({ _id: pupil_id, deleted_at: null });
+    if (!pupil) {
+      return res.status(404).json({ success: false, message: "Pupil not found" });
+    }
+
+    const invite_code = await generateInviteCode(pupil_id);
+    pupil.invite_code = invite_code;
+
+    await pupil.save();
+    await PupilInvitationMail(pupil.email, pupil.full_name, invite_code);
+
+    return res.status(200).json({ success: true, message: "Invite code regenerated and email sent", invite_code });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+
+  }
+}
