@@ -23,7 +23,7 @@ const MoneySchema = new mongoose.Schema({
 
     payment_method: {
         type: String,
-        enum: ["Backs", "Cash", "Cheque", "Card", "Apple Pay", "PayPal"],
+        enum: ["Bacs", "Cash", "Cheque", "Card", "Apple Pay", "PayPal"],
         default: "Cash"
     },
 

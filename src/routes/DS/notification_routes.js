@@ -213,4 +213,29 @@ router.post(
     NotificationStore.MarkAsReadByUserId
 );
 
+/**
+ * @swagger
+ * /ds/notification/delete-all/{id}:
+ *   delete:
+ *     summary: Delete all notifications for a specific user
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user ID to delete notifications for
+ *     responses:
+ *       200:
+ *         description: Notifications deleted successfully
+ *       400:
+ *         description: User ID is required
+ *       500:
+ *         description: Internal server error
+ */
+router.delete("/notification/delete-all/:id", NotificationStore.DeleteAllByUserId);
+
 module.exports = router;

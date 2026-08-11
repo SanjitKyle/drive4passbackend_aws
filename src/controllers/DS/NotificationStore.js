@@ -100,6 +100,33 @@ exports.GetNotificationByUserId = async (req, res) => {
         })
     }
 }
+
+exports.DeleteAllByUserId = async (req, res) => {
+    try {
+        const id = req.params.id;
+        
+        if (!id) {
+            return res.status(400).json({
+                message: "User ID is required",
+                success: false
+            });
+        }
+
+        const result = await noficationStore.deleteMany({ receiver_id: id });
+        
+        return res.status(200).json({
+            message: `Successfully deleted all notifications for this user (${result.deletedCount} found)`,
+            success: true
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error while deleting notifications",
+            success: false,
+            error: error.message
+        });
+    }
+}
 exports.DeleteNotification=async(req,res)=>{
     try{
         const id=req.params.id;
