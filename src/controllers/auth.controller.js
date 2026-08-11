@@ -8,6 +8,8 @@ const { SingUpMail } = require("../utils/MailSend");
 const { createInstructor } = require("./DS/instructor_master.controller");
 const InstructorMaster = require("../models/DS/instructor_master.model");
 const uploadToS3 = require("../utils/s3_upload");
+const generateInviteCode = require("../utils/invite_code");
+
 const fs = require("fs");
 
 exports.login = async (req, res, next) => {
@@ -428,7 +430,7 @@ const PupilModel = require("../models/DS/pupil.model");
 
 exports.pupilLogin = async (req, res, next) => {
   try {
-    const { phone,email, password } = req.body; // Expecting 'email' key in the body
+    const { phone, email, password } = req.body; // Expecting 'email' key in the body
 
     if (!email || !password) {
       return res.status(400).json({ status: false, message: "Email/Phone and password are required" });
@@ -458,20 +460,19 @@ exports.pupilLogin = async (req, res, next) => {
       role: "pupil",
       school_id: pupil.school_id?._id
     };
-    
-    const { accessToken, refreshToken } = GenerateToken(payload);
 
-    if(accessToken && refreshToken){
-       pupil.is_login = true;
-       pupil.auth_token = accessToken;
-       await pupil.save();
+
+    const accessToken = await generateInviteCode(pupil._id);
+    if (accessToken) {
+      pupil.is_login = true;
+      pupil.auth_token = accessToken;
+      await pupil.save();
     }
 
     return res.status(200).json({
       status: true,
       message: "Pupil login successful",
       accessToken,
-      refreshToken,
       user: pupil
     });
 
