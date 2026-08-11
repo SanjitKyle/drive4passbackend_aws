@@ -28,8 +28,6 @@ exports.createInstructor = async (data) => {
   }
 };
 
-const UserModel = require("../../models/user.model");
-
 exports.createInstructorByAdmin = async (req, res, next) => {
   try {
     const data = req.body;

@@ -16,7 +16,7 @@ const notificationToken = require("../../models/DS/fcmtokenstore");
 const notificationStore = require("../../models/DS/notification_stored");
 const generateInviteCode = require("../../utils/invite_code");
 const { PupilInvitationMail } = require("../../utils/MailSend");
-const UserModel=require("../../models/user.model")
+
 // CREATE a new pupil
 exports.createPupil = async (req, res, next) => {
   const session = await mongoose.startSession();
