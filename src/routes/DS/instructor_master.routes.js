@@ -96,7 +96,7 @@ const router = express.Router();
  *       400:
  *         description: Bad request
  */
-router.post("/instructor-masters",  InstructorController.createInstructor);
+router.post("/instructor-masters",  InstructorController.createInstructorByAdmin);
 
 /**
  * @swagger

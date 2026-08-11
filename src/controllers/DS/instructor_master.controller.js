@@ -22,13 +22,38 @@ exports.createInstructor = async (data) => {
       throw new Error("Instructor creation failed");
     }
 
-    // TODO: Send email notification here
-    // await sendInstructorEmail(instructor);
-    // await SingUpMail()
-
     return instructor; // return created object
   } catch (error) {
     throw error; // let controller handle it
+  }
+};
+
+const UserModel = require("../../models/user.model");
+
+exports.createInstructorByAdmin = async (req, res, next) => {
+  try {
+    const data = req.body;
+
+    // Check if email is already used in auth
+    if (data.email) {
+      const existingUser = await UserModel.findOne({ email: data.email });
+      if (existingUser) {
+        return res.status(400).json({
+          status: false,
+          message: "This email is already in use by another account.",
+        });
+      }
+    }
+
+    const instructor = await InstructorMaster.create(data);
+    
+    return res.status(201).json({
+      success: true,
+      message: "Instructor created successfully",
+      data: instructor
+    });
+  } catch (error) {
+    next(error);
   }
 };
 exports.getInstructors = async (req, res, next) => {

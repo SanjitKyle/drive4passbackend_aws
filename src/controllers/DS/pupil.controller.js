@@ -16,6 +16,7 @@ const notificationToken = require("../../models/DS/fcmtokenstore");
 const notificationStore = require("../../models/DS/notification_stored");
 const generateInviteCode = require("../../utils/invite_code");
 const { PupilInvitationMail } = require("../../utils/MailSend");
+const UserModel=require("../../models/user.model")
 // CREATE a new pupil
 exports.createPupil = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -29,6 +30,11 @@ exports.createPupil = async (req, res, next) => {
 
     const { full_name, phone, email, instructor_id, area_id, package_id, postcode, gearbox } =
       req.body;
+
+      const userExists=await UserModel.findOne({email:email}).session(session);
+      if(userExists){
+        throw new Error("Email already exists.");
+      }
 
     if (!full_name || !phone || !email || !instructor_id || !package_id) {
       throw new Error("Missing required fields.");
@@ -424,3 +430,4 @@ exports.AcceptInvitation = async (req, res, next) => {
     next(error);
   }
 };
+
