@@ -268,7 +268,7 @@ exports.updatePupil = async (req, res, next) => {
 exports.getAllPupils = async (req, res, next) => {
   try {
     const school_id = req.user.school_id;
-    const pupils = await Pupil.find({ deleted_at: null, school_id })
+    const pupils = await Pupil.find({ deleted_at: null})
       .populate("instructor_id")
       .populate("package_id")
       .populate("area_id")
