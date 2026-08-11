@@ -83,6 +83,7 @@ exports.createPupil = async (req, res, next) => {
     const pupil_id = pupil[0]._id;
     const invite_code = await generateInviteCode(pupil_id);
     pupil[0].invite_code = invite_code;
+    await pupil[0].save({ session }); // Missing save!
 
     console.log("pupil", pupil);
 
