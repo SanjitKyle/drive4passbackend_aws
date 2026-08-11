@@ -104,6 +104,15 @@ const PupilSchema = new mongoose.Schema(
       type:Boolean,
       default:false
     },
+    is_login:{
+      type:Boolean,
+      default:false
+    },
+    auth_token: {
+      type: String,
+      default: null,
+    },
+ 
 
     active: {
       type: Number,

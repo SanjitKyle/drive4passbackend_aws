@@ -428,16 +428,16 @@ const PupilModel = require("../models/DS/pupil.model");
 
 exports.pupilLogin = async (req, res, next) => {
   try {
-    const { email, password } = req.body; // Expecting 'email' key in the body
+    const { phone,email, password } = req.body; // Expecting 'email' key in the body
 
     if (!email || !password) {
       return res.status(400).json({ status: false, message: "Email/Phone and password are required" });
     }
 
     const pupil = await PupilModel.findOne({
-      $or: [{ email: email }, { phone: email }],
+      $or: [{ email: email }, { phone: phone }],
       deleted_at: null
-    }).populate("school_id").populate("instructor_id");
+    }).populate("instructor_id");
 
     if (!pupil || pupil.active === 0) {
       return res.status(404).json({ status: false, message: "Pupil not found or account not active" });
@@ -460,6 +460,12 @@ exports.pupilLogin = async (req, res, next) => {
     };
     
     const { accessToken, refreshToken } = GenerateToken(payload);
+
+    if(accessToken && refreshToken){
+       pupil.is_login = true;
+       pupil.auth_token = accessToken;
+       await pupil.save();
+    }
 
     return res.status(200).json({
       status: true,
