@@ -148,7 +148,6 @@ router.post("/pupils/:id", PupilController.updatePupil);
  *       200:
  *         description: Pupil deleted successfully
  *       404:
- *         description: Pupil not found
  */
 router.get("/pupils/delete/:id", PupilController.deletePupil);
 

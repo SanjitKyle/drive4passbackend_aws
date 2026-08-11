@@ -424,6 +424,56 @@ exports.changePassword = async (req, res, next) => {
   }
 };
 
+const PupilModel = require("../models/DS/pupil.model");
+
+exports.pupilLogin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body; // Expecting 'email' key in the body
+
+    if (!email || !password) {
+      return res.status(400).json({ status: false, message: "Email/Phone and password are required" });
+    }
+
+    const pupil = await PupilModel.findOne({
+      $or: [{ email: email }, { phone: email }],
+      deleted_at: null
+    }).populate("school_id").populate("instructor_id");
+
+    if (!pupil || pupil.active === 0) {
+      return res.status(404).json({ status: false, message: "Pupil not found or account not active" });
+    }
+
+    if (!pupil.password || pupil.signup_type === false) {
+      return res.status(400).json({ status: false, message: "Account not setup completely. Please use your invitation link." });
+    }
+
+    const isMatch = await bcrypt.compare(password, pupil.password);
+    if (!isMatch) {
+      return res.status(400).json({ status: false, message: "Invalid credentials" });
+    }
+
+    // JWT Token Generation
+    const payload = {
+      _id: pupil._id,
+      role: "pupil",
+      school_id: pupil.school_id?._id
+    };
+    
+    const { accessToken, refreshToken } = GenerateToken(payload);
+
+    return res.status(200).json({
+      status: true,
+      message: "Pupil login successful",
+      accessToken,
+      refreshToken,
+      user: pupil
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.logout = async (req, res, next) => {
   try {
     const userId = req.user._id;

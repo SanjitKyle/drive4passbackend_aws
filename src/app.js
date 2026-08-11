@@ -44,6 +44,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // App Routes
 app.use('/api', require('./routes/auth.routes'));
 
+// Public DS routes under /api/ds (No Auth Required)
+app.use('/api/ds', require('./routes/DS/public.routes.js'));
 
 // Group protected routes under authMiddleware
 app.use('/api', authMiddleware, [
@@ -78,7 +80,7 @@ app.use('/api/lms', authMiddleware, [
   require("./routes/LMS/lead_tagging.routes"),
 ]);
 
-// DS routes under /api/ds
+// DS routes under /api/ds (Auth Required)
 app.use('/api/ds', authMiddleware, [
   require('./routes/DS/uploads.routes'),
   require('./routes/DS/package_master.routes'),

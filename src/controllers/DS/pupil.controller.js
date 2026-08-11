@@ -13,7 +13,9 @@ const pupil_creditsModel = require("../../models/DS/pupil_credits.model");
 const moneyModel = require("../../models/DS/money.model");
 const { sendNotification } = require("./message_token_store");
 const notificationToken = require("../../models/DS/fcmtokenstore");
-const notificationStore = require("../../models/DS/notification_stored")
+const notificationStore = require("../../models/DS/notification_stored");
+const generateInviteCode = require("../../utils/invite_code");
+const { PupilInvitationMail } = require("../../utils/MailSend");
 // CREATE a new pupil
 exports.createPupil = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -79,8 +81,13 @@ exports.createPupil = async (req, res, next) => {
     );
 
     const pupil_id = pupil[0]._id;
+    const invite_code = await generateInviteCode(pupil_id);
+    pupil[0].invite_code = invite_code;
 
     console.log("pupil", pupil);
+
+    // send mail to pupil for invition code 
+    await PupilInvitationMail(email, pupil[0].full_name,invite_code);
 
     // Get pricing
     const pricingData = await price_masterModel
@@ -113,20 +120,20 @@ exports.createPupil = async (req, res, next) => {
     }
 
     // Create credits
-    const creditResult = await createPupilCredits(
-      {
-        pupil_id,
-        credits: packageData.duration,
-        reference: "sale",
-        school_id,
-        user: created_by,
-      },
-      session,
-    );
+    // const creditResult = await createPupilCredits(
+    //   {
+    //     pupil_id,
+    //     credits: packageData.duration,
+    //     reference: "sale",
+    //     school_id,
+    //     user: created_by,
+    //   },
+    //   session,
+    // );
 
-    if (!creditResult.success) {
-      throw new Error(creditResult.message);
-    }
+    // if (!creditResult.success) {
+    //   throw new Error(creditResult.message);
+    // }
 
     if (String(instructor_id) !== String(created_by)) {
       const userToken = await notificationToken.findOne({ user: instructor_id });
@@ -138,13 +145,14 @@ exports.createPupil = async (req, res, next) => {
           data: { type: "new_pupil", pupil_id: String(pupil_id) }
         });
         await notificationStore.create({
-          message:  `A new pupil  name :${full_name} has been assigned to you.`,
+          message: `A new pupil  name :${full_name} has been assigned to you.`,
           receiver_id: instructor_id,
           sender_id: created_by,
         });
       }
 
     }
+
 
     await session.commitTransaction();
     session.endSession();
@@ -365,6 +373,52 @@ exports.deletePupil = async (req, res, next) => {
     res
       .status(200)
       .json({ success: true, message: "Pupil deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.AcceptInvitation = async (req, res, next) => {
+  try {
+    const { invite_code, password } = req.body;
+
+    if (!invite_code) {
+      const err = new Error("Invite code is required");
+      err.status = 400;
+      return next(err);
+    }
+    
+    if (!password) {
+      const err = new Error("Password is required");
+      err.status = 400;
+      return next(err);
+    }
+
+    // Find the pupil by invite code
+    const pupil = await Pupil.findOne({ invite_code, deleted_at: null });
+
+    if (!pupil) {
+      const err = new Error("Invalid or expired invitation code");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Hash the password securely
+    const bcrypt = require("bcryptjs");
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update pupil
+    pupil.password = hashedPassword;
+    pupil.signup_type = true;
+    pupil.invite_code = null; // Clear the invite code so it can't be reused
+    pupil.active = 1; // Mark as active
+
+    await pupil.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password set and signup completed successfully",
+    });
   } catch (error) {
     next(error);
   }

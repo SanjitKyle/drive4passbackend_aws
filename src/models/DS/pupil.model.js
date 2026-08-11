@@ -13,6 +13,9 @@ const PupilSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    password: {
+      type: String
+    },
 
     area_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -44,6 +47,7 @@ const PupilSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
       trim: true,
       lowercase: true,
       match: [/.+\@.+\..+/, "Please fill a valid email address"],
@@ -66,9 +70,12 @@ const PupilSchema = new mongoose.Schema(
       max: 100,
     },
 
-    deleted_at: {
-      type: Date,
-      default: null,
+    invite_code: {
+      type: String
+    },
+    invited_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user"
     },
 
     // Audit fields
@@ -89,6 +96,15 @@ const PupilSchema = new mongoose.Schema(
       ref: "user",
       default: null,
     },
+    deleted_at: {
+      type: Date,
+      default: null,
+    },
+    signup_type:{
+      type:Boolean,
+      default:false
+    },
+
     active: {
       type: Number,
       enum: [0, 1],

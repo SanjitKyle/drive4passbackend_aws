@@ -240,4 +240,37 @@ router.get('/validateToken', authMiddleware, AuthController.validateToken);
 router.post("/change-password", authMiddleware, AuthController.changePassword);
 
 
+/**
+ * @swagger
+ * /pupil-login:
+ *   post:
+ *     summary: Pupil login
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: pupil@example.com or 1234567890
+ *               password:
+ *                 type: string
+ *                 example: StrongPassword@123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Invalid credentials or incomplete setup
+ *       404:
+ *         description: Pupil not found or inactive
+ */
+router.post('/pupil-login', AuthController.pupilLogin);
+
+
 module.exports = router;

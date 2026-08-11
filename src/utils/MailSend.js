@@ -631,3 +631,142 @@ exports.InstructorUpdateProfileMail = async (businessName, email, password, name
     console.error("InstructorUpdateProfileMail error:", error);
   }
 };
+
+exports.PupilInvitationMail = async (
+  email,
+  name,
+  invitationCode
+) => {
+  const businessName = "Drive4Pass";
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_APP_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      to: email,
+      subject: `You're Invited to Join ${businessName}`,
+
+      text: `Hello ${name},
+
+Welcome to ${businessName}!
+
+You have been invited to join ${businessName} as a pupil.
+
+Your invitation code is:
+
+${invitationCode}
+
+This invitation code is valid for 7 days only. Please complete your registration before the code expires.
+
+If you did not expect this invitation, please contact the ${businessName} team.
+
+We look forward to helping you on your driving journey.
+
+Warm regards,
+${businessName} Team`,
+
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Drive4Pass Invitation</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+          </style>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f0f4f8; font-family: 'Inter', Helvetica, sans-serif;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="padding: 50px 20px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                  
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 40px 30px; text-align: center;">
+                      <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;">Drive4Pass</h1>
+                      <p style="margin: 12px 0 0; color: #e0e7ff; font-size: 16px; font-weight: 400;">Your driving journey starts here</p>
+                    </td>
+                  </tr>
+                  
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 50px 40px;">
+                      <h2 style="margin-top: 0; color: #111827; font-size: 26px; font-weight: 800; text-align: center;">You're Invited! 🚗</h2>
+                      <p style="color: #4b5563; font-size: 17px; line-height: 1.6; text-align: center; margin-bottom: 30px;">
+                        Hello <strong>${name}</strong>,<br><br>
+                        Welcome to Drive4Pass! You have been exclusively invited to join us as a pupil. To complete your registration and activate your account, please use your unique invitation code below:
+                      </p>
+
+                      <!-- Invitation Code -->
+                      <div style="background: linear-gradient(to right, #f3f4f6, #f8fafc); border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; text-align: center; margin: 30px 0;">
+                        <p style="margin: 0 0 15px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px;">YOUR INVITATION CODE</p>
+                        <div style="background-color: #ffffff; border-radius: 8px; padding: 20px; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left; overflow-wrap: break-word; word-wrap: break-word; word-break: break-all;">
+                          <p style="margin: 0; color: #0f172a; font-size: 14px; font-weight: 500; font-family: monospace; line-height: 1.6;">${invitationCode}</p>
+                        </div>
+                      </div>
+
+                      <!-- Expiry Warning -->
+                      <div style="background-color: #fff1f2; border-radius: 8px; padding: 20px; margin-bottom: 30px; text-align: center;">
+                        <p style="margin: 0; color: #be123c; font-size: 15px; line-height: 1.5;">
+                          <span style="font-size: 20px; display: block; margin-bottom: 5px;">⏳</span>
+                          <strong>Time-sensitive:</strong> Your invitation code is valid for <strong>7 days only</strong>. Please complete your registration before the code expires.
+                        </p>
+                      </div>
+
+                      <p style="color: #64748b; font-size: 15px; line-height: 1.6; text-align: center;">
+                        If you did not expect this invitation, please ignore this email or contact the Drive4Pass team.
+                      </p>
+
+                      <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 40px 0;">
+
+                      <p style="color: #0f172a; font-size: 16px; font-weight: 600; text-align: center; margin: 0;">
+                        Warm regards,<br>
+                        <span style="color: #4f46e5; font-size: 18px; display: inline-block; margin-top: 5px;">Drive4Pass Team</span>
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f8fafc; padding: 25px; text-align: center; border-top: 1px solid #e2e8f0;">
+                      <p style="margin: 0; color: #94a3b8; font-size: 13px;">© ${new Date().getFullYear()} Drive4Pass. All rights reserved.</p>
+                      <p style="margin: 8px 0 0; color: #cbd5e1; font-size: 12px;">This is an automated email. Please do not reply directly.</p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+      `,
+    });
+
+    console.log(
+      "Pupil invitation email sent:",
+      info.messageId
+    );
+
+    return info;
+
+  } catch (error) {
+    console.error(
+      "PupilInvitationMail error:",
+      error
+    );
+  }
+};
