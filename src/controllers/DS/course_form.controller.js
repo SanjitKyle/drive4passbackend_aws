@@ -162,13 +162,13 @@ exports.updateStatus = async (req, res) => {
                 const responsetogetnotifaction = await sendNotification({
                     token: userToSendNotification.token,
                     title: "Intensive Course Enquiry Updated",
-                    body: `${getInstructorProfile.name} has updated the status of an intensive course enquiry to ${status}.`,
+                    body: `Intensive Course Enquiry Update. ${getInstructorProfile.name} has changed the status to ${status}.`,
                     data: { url: `https://admin.drive4pass.co.uk/course-enquiries/${req.params.id}` }
                 });
                 
                 if (responsetogetnotifaction) {
                     await NotificationStore.create({
-                        message: `${getInstructorProfile.name} has updated the status of an intensive course enquiry to ${status}.`,
+                        message: `Intensive Course Enquiry Update. ${getInstructorProfile.name} has changed the status to ${status}.`,
                         receiver_id: "694a2d3c5f403a5f000eaa51",
                         sender_id: id,
                         redirect_url: `https://admin.drive4pass.co.uk/course-enquiries/${req.params.id}`
@@ -219,7 +219,7 @@ exports.assignInstructor = async (req, res) => {
 
         const userToSendNotification = await NotificationToken.findOne({ user: instructor_id });
         if (userToSendNotification?.token) {
-            let notificationBody = `A new intensive course enquiry has been assigned to you and status is ${updated.status}.`;
+            let notificationBody = `You have been assigned a new intensive course enquiry. Current status is ${updated.status}.`;
             const responsetogetnotifaction = await sendNotification({
                 token: userToSendNotification.token,
                 title: "Pupil Assigned",

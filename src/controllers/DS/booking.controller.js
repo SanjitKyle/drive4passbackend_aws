@@ -89,11 +89,20 @@ exports.createBooking = async (req, res, next) => {
     // =============================
     // CHECK INSTRUCTOR TIME CONFLICT
     // =============================
-    const bookings = await booking.find({ instructor_id });
+    const bookings = await booking.find({ 
+      instructor_id,
+      status: { $ne: 'cancelled' },
+      deleted_at: null
+    });
+
+    let check_booking_date = booking_date;
+    if (typeof check_booking_date === "string" && check_booking_date.includes("T")) {
+      check_booking_date = check_booking_date.split("T")[0];
+    }
 
     const isConflict = bookings.some((b) => {
-      const sameDate =
-        b.booking_date.toISOString().slice(0, 10) === booking_date;
+      const b_date = b.booking_date.toISOString().slice(0, 10);
+      const sameDate = b_date === check_booking_date;
 
       const overlap = start_time < b.end_time && end_time > b.start_time;
 
@@ -201,7 +210,14 @@ exports.createBooking = async (req, res, next) => {
     if (String(instructor_id) !== String(created_by)) {
       const userToSendNotification = await NotificationToken.findOne({ user: instructor_id });
       if (userToSendNotification?.token) {
-        let notificationBody = `A new booking request has come to you.`;
+        let displayDate = booking_date;
+        if (typeof displayDate === "string" && displayDate.includes("T")) {
+            displayDate = displayDate.split("T")[0];
+        } else if (displayDate instanceof Date) {
+            displayDate = displayDate.toISOString().split("T")[0];
+        }
+
+        let notificationBody = `New booking request from ${pupil.full_name} scheduled on ${displayDate} at ${start_time}. Please review your schedule.`;
         const response = await sendNotification({
           token: userToSendNotification.token,
           title: "New Booking Request",
@@ -331,6 +347,40 @@ exports.updateBooking = async (req, res, next) => {
     });
 
     let newCreditUse = existingBooking.credit_use;
+
+    // Check for instructor time conflict
+    const check_instructor_id = updateData.instructor_id || existingBooking.instructor_id;
+    let check_booking_date = updateData.booking_date || existingBooking.booking_date;
+    
+    if (check_booking_date instanceof Date) {
+      check_booking_date = check_booking_date.toISOString().split("T")[0];
+    } else if (typeof check_booking_date === "string" && check_booking_date.includes("T")) {
+      check_booking_date = check_booking_date.split("T")[0];
+    }
+    
+    const check_start_time = updateData.start_time || existingBooking.start_time;
+    const check_end_time = updateData.end_time || existingBooking.end_time;
+
+    const instructorBookings = await booking.find({ 
+      instructor_id: check_instructor_id, 
+      _id: { $ne: booking_id },
+      status: { $ne: 'cancelled' },
+      deleted_at: null 
+    });
+
+    const isConflict = instructorBookings.some((b) => {
+      const b_date = b.booking_date.toISOString().slice(0, 10);
+      const sameDate = b_date === check_booking_date;
+      const overlap = check_start_time < b.end_time && check_end_time > b.start_time;
+      return sameDate && overlap;
+    });
+
+    if (isConflict) {
+      return res.status(403).json({
+        success: false,
+        message: "Instructor is not free at this time",
+      });
+    }
 
     // Recalculate only if time/date changes
     if (

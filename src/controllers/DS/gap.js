@@ -416,7 +416,7 @@ exports.convertGapToBooking = async (req, res, next) => {
         if (String(targetInstructorId) !== String(created_by)) {
             const userToSendNotification = await NotificationToken.findOne({ user: targetInstructorId });
             if (userToSendNotification?.token) {
-                let notificationBody = `A new booking request has come to you from gap conversion.`;
+                let notificationBody = `A gap conversion has resulted in a new booking. Please review your updated schedule.`;
                 const response = await sendNotification({
                     token: userToSendNotification.token,
                     title: 'New Booking Request',

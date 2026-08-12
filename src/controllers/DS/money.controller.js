@@ -256,3 +256,81 @@ exports.getPupilMoney = async (req, res, next) => {
         })
     }
 }
+
+exports.deleteInstructorMoney = async (req, res, next) => {
+    try {
+        const instructor_id = req.params.id;
+        const school_id = req.user.school_id;
+        const loggedInUserId = req.user._id;
+
+        if (!instructor_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Instructor ID is required"
+            });
+        }
+
+        const instructor = await instructorModel.findById(instructor_id);
+        if (!instructor) {
+            return res.status(404).json({
+                success: false,
+                message: "Instructor not found"
+            });
+        }
+
+        // Find records before deleting to recalculate sales
+        const recordsToDelete = await Money.find({ instructor_id, school_id, deleted_at: null });
+
+        if (recordsToDelete.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No money records found for this instructor"
+            });
+        }
+
+        // Soft delete the records
+        await Money.updateMany(
+            { instructor_id, school_id, deleted_at: null },
+            { $set: { deleted_at: new Date(), deleted_by: loggedInUserId } }
+        );
+
+        // Recalculate sales status for affected sales
+        const affectedSales = new Map();
+        for (const record of recordsToDelete) {
+            if (record.sell_id && record.pupil_id) {
+                const key = `${record.sell_id}_${record.pupil_id}`;
+                if (!affectedSales.has(key)) {
+                    affectedSales.set(key, { sell_id: record.sell_id, pupil_id: record.pupil_id });
+                }
+            }
+        }
+
+        for (const { sell_id, pupil_id } of affectedSales.values()) {
+            const sellProfile = await sell.findById(sell_id);
+            if (sellProfile) {
+                const packageId = sellProfile.package_id;
+                const allPayments = await Money.find({ pupil_id, sell_id, deleted_at: null });
+                const totalPaid = allPayments.reduce((sum, payment) => sum + payment.amount, 0);
+                
+                const pricing = await Pricing.findOne({ package_id: packageId });
+                if (pricing) {
+                    if (totalPaid >= pricing.price) {
+                        await sell.findByIdAndUpdate(sell_id, { status: "Paid" }, { new: true });
+                    } else {
+                        await sell.findByIdAndUpdate(sell_id, { status: "Unpaid" }, { new: true });
+                    }
+                }
+            }
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Instructor money records deleted successfully",
+            deleted_count: recordsToDelete.length
+        });
+
+    } catch (error) {
+        console.log("Delete Instructor Money Error:", error);
+        next(error);
+    }
+};

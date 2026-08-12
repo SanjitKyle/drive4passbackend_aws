@@ -136,14 +136,14 @@ exports.updateEnquiryStatus = async (req, res) => {
         const responsetogetnotifaction = await sendNotification({
           token: userToSendNotification?.token,
           title: "Enquiry Updated",
-          body: `${getInstructorProfile?.name} has updated the status of an enquiry to ${status}.`,
+          body: `Enquiry Update. ${getInstructorProfile?.name} has changed the status to ${status}.`,
           data: {
             url: `https://admin.drive4pass.co.uk/enquiries/${req.params.id}`
           }
         });
         if (responsetogetnotifaction) {
           const storingToDb = await NotificationStore.create({
-            message: `${getInstructorProfile?.name} has updated the status of an enquiry to ${status}.`,
+            message: `Enquiry Update. ${getInstructorProfile?.name} has changed the status to ${status}.`,
             receiver_id: "694a2d3c5f403a5f000eaa51",
             sender_id: id,
             redirect_url: `https://admin.drive4pass.co.uk/enquiries/${req.params.id}`
@@ -222,13 +222,13 @@ exports.updateStatus = async (req, res) => {
         const responsetogetnotifaction = await sendNotification({
           token: userToSendNotification.token,
           title: "Enquiry Confirmed",
-          body: `New enquiry ${enquiry.name} has been assigned to you and status is confirmed.`,
+          body: `You have been assigned a new enquiry from ${enquiry.name}. Status is confirmed.`,
           data: { route: "/enquiries" }
         });
         
         if (responsetogetnotifaction) {
           await NotificationStore.create({
-            message: `New enquiry ${enquiry.name} has been assigned to you and status is confirmed.`,
+            message: `You have been assigned a new enquiry from ${enquiry.name}. Status is confirmed.`,
             receiver_id: enquiry.instructor,
             sender_id: senderId,
             route: "/enquiries"
@@ -287,9 +287,9 @@ exports.assignInstructor = async (req, res) => {
     const userToSendNotification = await NotificationToken.findOne({ user: instructor_id });
     let responsetogetnotifaction;
     if (userToSendNotification?.token) {
-      let notificationBody = `A new enquiry has been assigned to you and status of enquiry is ${enquiry.status}.`;
+      let notificationBody = `You have been assigned a new enquiry. Current status is ${enquiry.status}.`;
       if (enquiry.enquiry_status === 'confirmed') {
-        notificationBody = `A new enquiry has been assigned to you and status is confirmed.`;
+        notificationBody = `You have been assigned a new enquiry. Status is confirmed.`;
       }
 
       responsetogetnotifaction = await sendNotification({

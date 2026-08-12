@@ -161,13 +161,13 @@ exports.updateStatus = async (req, res) => {
                 const responsetogetnotifaction = await sendNotification({
                     token: userToSendNotification.token,
                     title: "ADI Enquiry Updated",
-                    body: `${getInstructorProfile.name} has updated the status of an ADI enquiry to ${status}.`,
+                    body: `ADI Enquiry Update. ${getInstructorProfile.name} has changed the status to ${status}.`,
                     data: { url: `https://admin.drive4pass.co.uk/adi-enquiries/${req.params.id}` }
                 });
                 
                 if (responsetogetnotifaction) {
                     await NotificationStore.create({
-                        message: `${getInstructorProfile.name} has updated the status of an ADI enquiry to ${status}.`,
+                        message: `ADI Enquiry Update. ${getInstructorProfile.name} has changed the status to ${status}.`,
                         receiver_id: "694a2d3c5f403a5f000eaa51",
                         sender_id: id,
                         redirect_url: `https://admin.drive4pass.co.uk/adi-enquiries/${req.params.id}`

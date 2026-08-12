@@ -134,4 +134,29 @@ router.get("/money/instructor/:id", MoneyController.getInstructorMoney);
 router.get("/money/pupil/:id", MoneyController.getPupilMoney);
 
 
+/**
+ * @swagger
+ * /ds/money/instructor/{id}:
+ *   delete:
+ *     summary: Delete all money records of a specific instructor
+ *     tags: [Money]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Instructor ID
+ *     responses:
+ *       200:
+ *         description: Instructor money records deleted successfully
+ *       400:
+ *         description: Instructor ID is required
+ *       404:
+ *         description: No records found or instructor not found
+ *       500:
+ *         description: Internal server error
+ */
+router.delete("/money/instructor/:id", MoneyController.deleteInstructorMoney);
+
 module.exports = router;
