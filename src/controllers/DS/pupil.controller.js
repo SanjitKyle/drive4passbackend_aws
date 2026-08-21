@@ -15,7 +15,7 @@ const { sendNotification } = require("./message_token_store");
 const notificationToken = require("../../models/DS/fcmtokenstore");
 const notificationStore = require("../../models/DS/notification_stored");
 const generateInviteCode = require("../../utils/invite_code");
-const { PupilInvitationMail } = require("../../utils/MailSend");
+const { PupilInvitationMail, PupilPasswordChanged } = require("../../utils/MailSend");
 
 // CREATE a new pupil
 exports.createPupil = async (req, res, next) => {
@@ -268,7 +268,7 @@ exports.updatePupil = async (req, res, next) => {
 exports.getAllPupils = async (req, res, next) => {
   try {
     const school_id = req.user.school_id;
-    const pupils = await Pupil.find({ deleted_at: null})
+    const pupils = await Pupil.find({ deleted_at: null })
       .populate("instructor_id")
       .populate("package_id")
       .populate("area_id")
@@ -454,5 +454,38 @@ exports.reGenerateInviteCode = async (req, res, next) => {
   } catch (error) {
     return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
 
+  }
+}
+
+exports.changePupilPassword = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const getProfile = await Pupil.findOne({ email });
+    if (!getProfile) {
+      return res.status(404).json({
+        message: "Could not found any pupil with this email",
+        success: false
+      })
+    }
+
+    const bcrypt = require("bcryptjs");
+    const hassedPassword = await bcrypt.hash(password, 10);
+    getProfile.password = hassedPassword;
+    await getProfile.save();
+    PupilPasswordChanged(email,
+      getProfile.full_name,
+      password)
+    return res.status(200).json({
+      message: "Password changed successfully",
+      success: true
+    })
+
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false
+    })
   }
 }

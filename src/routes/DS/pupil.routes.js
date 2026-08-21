@@ -180,6 +180,47 @@ router.get("/pupils/delete/:id", PupilController.deletePupil);
  *       500:
  *         description: Internal server error
  */
-router.post("/pupils/regenerate-invitation", PupilController.reGenerateInviteCode);
+router.post("/pupils/changepassword", PupilController.reGenerateInviteCode);
+
+/**
+ * @swagger
+ * /ds/pupils/changepassword:
+ *   post:
+ *     summary: Change pupil password and send email
+ *     tags: [Pupil]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: pupil@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: MyNewPassword123
+ *     responses:
+ *       200:
+ *         description: Password changed successfully and email sent
+ *       400:
+ *         description: Email and password are required
+ *       404:
+ *         description: Pupil not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post(
+  "/pupils/changepassword",
+  PupilController.changePassword
+);
 
 module.exports = router;

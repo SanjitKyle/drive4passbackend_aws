@@ -619,11 +619,11 @@ exports.InstructorUpdateProfileMail = async (businessName, email, password, name
 
   try {
     const info = await transporter.sendMail({
-      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      from: `"Drive4pass Team" <${process.env.EMAIL}>`,
       to: email,
-      subject: `Your Login Details Have Been Updated - ${businessName}`,
-      text: `Hello ${name},\n\nYour instructor profile has been updated. Here are your new login details:\nEmail: ${email}\nPassword: ${password}\n\nWarm regards,\n${businessName} Team`,
-      html: `<p>Hello ${name},</p><p>Your instructor profile has been updated. Here are your new login details:</p><ul><li><strong>Email:</strong> ${email}</li><li><strong>Password:</strong> ${password}</li></ul><br><p>Warm regards,<br>${businessName} Team</p>`
+      subject: `Your Login Details Have Been Updated - Drive4pass`,
+      text: `Hello ${name},\n\nYour instructor profile has been updated. Here are your new login details:\nEmail: ${email}\nPassword: ${password}\n\nWarm regards,\nDrive4pass Team`,
+      html: `<p>Hello ${name},</p><p>Your instructor profile has been updated. Here are your new login details:</p><ul><li><strong>Email:</strong> ${email}</li><li><strong>Password:</strong> ${password}</li></ul><br><p>Warm regards,<br>Drive4pass Team</p>`
     });
     console.log("Instructor profile update email sent:", info.messageId);
     return info;
@@ -654,15 +654,15 @@ exports.PupilInvitationMail = async (
 
   try {
     const info = await transporter.sendMail({
-      from: `"${businessName} Team" <${process.env.EMAIL}>`,
+      from: `"Drive4pass Team" <${process.env.EMAIL}>`,
       to: email,
-      subject: `You're Invited to Join ${businessName}`,
+      subject: `You're Invited to Join Drive4pass`,
 
       text: `Hello ${name},
 
-Welcome to ${businessName}!
+Welcome to Drive4pass!
 
-You have been invited to join ${businessName} as a pupil.
+You have been invited to join Drive4pass as a pupil.
 
 Your invitation code is:
 
@@ -670,12 +670,12 @@ ${invitationCode}
 
 This invitation code is valid for 7 days only. Please complete your registration before the code expires.
 
-If you did not expect this invitation, please contact the ${businessName} team.
+If you did not expect this invitation, please contact the Drive4pass team.
 
 We look forward to helping you on your driving journey.
 
 Warm regards,
-${businessName} Team`,
+Drive4pass Team`,
 
       html: `
         <!DOCTYPE html>
@@ -768,5 +768,346 @@ ${businessName} Team`,
       "PupilInvitationMail error:",
       error
     );
+  }
+};
+
+exports.PupilPasswordChanged = async (
+  email,
+  name,
+  password
+) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_APP_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Drive4pass Team" <${process.env.EMAIL}>`,
+      to: email,
+      subject: `Your Drive4pass Password Has Been Changed`,
+
+      text: `Hello ${name},
+
+Your Drive4pass account password has been changed by an administrator.
+
+Your new password is:
+
+${password}
+
+You can now use your email address and the new password to log in to your Drive4pass account.
+
+If you did not request or expect this password change, please contact the Drive4pass team immediately.
+
+Warm regards,
+Drive4pass Team`,
+
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Password Changed - Drive4Pass</title>
+        </head>
+
+        <body style="margin:0; padding:0; background-color:#f0f4f8; font-family:Arial, Helvetica, sans-serif;">
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="padding:50px 20px;">
+            <tr>
+              <td align="center">
+
+                <table
+                  width="600"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    max-width:600px;
+                    width:100%;
+                    background-color:#ffffff;
+                    border-radius:16px;
+                    overflow:hidden;
+                    box-shadow:0 10px 40px rgba(0,0,0,0.1);
+                  "
+                >
+
+                  <!-- Header -->
+                  <tr>
+                    <td
+                      style="
+                        background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);
+                        padding:40px 30px;
+                        text-align:center;
+                      "
+                    >
+                      <h1
+                        style="
+                          margin:0;
+                          color:#ffffff;
+                          font-size:32px;
+                          font-weight:800;
+                        "
+                      >
+                        Drive4Pass
+                      </h1>
+
+                      <p
+                        style="
+                          margin:12px 0 0;
+                          color:#e0e7ff;
+                          font-size:16px;
+                        "
+                      >
+                        Your driving journey starts here
+                      </p>
+                    </td>
+                  </tr>
+
+
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding:50px 40px;">
+
+                      <h2
+                        style="
+                          margin:0 0 20px;
+                          color:#111827;
+                          font-size:26px;
+                          font-weight:800;
+                          text-align:center;
+                        "
+                      >
+                        Password Changed Successfully 🔐
+                      </h2>
+
+
+                      <p
+                        style="
+                          color:#4b5563;
+                          font-size:17px;
+                          line-height:1.6;
+                          text-align:center;
+                          margin-bottom:30px;
+                        "
+                      >
+                        Hello <strong>${name}</strong>,
+                        <br><br>
+
+                        Your Drive4Pass account password has been
+                        <strong>changed by an administrator</strong>.
+                      </p>
+
+
+                      <!-- Password Box -->
+                      <div
+                        style="
+                          background:linear-gradient(to right,#f3f4f6,#f8fafc);
+                          border:2px solid #e2e8f0;
+                          border-radius:12px;
+                          padding:25px;
+                          text-align:center;
+                          margin:30px 0;
+                        "
+                      >
+
+                        <p
+                          style="
+                            margin:0 0 15px;
+                            color:#64748b;
+                            font-size:13px;
+                            font-weight:600;
+                            text-transform:uppercase;
+                            letter-spacing:1.5px;
+                          "
+                        >
+                          YOUR NEW PASSWORD
+                        </p>
+
+                        <div
+                          style="
+                            background-color:#ffffff;
+                            border-radius:8px;
+                            padding:18px;
+                            box-shadow:0 4px 6px rgba(0,0,0,0.05);
+                          "
+                        >
+                          <p
+                            style="
+                              margin:0;
+                              color:#0f172a;
+                              font-size:18px;
+                              font-weight:700;
+                              font-family:monospace;
+                              word-break:break-all;
+                            "
+                          >
+                            ${password}
+                          </p>
+                        </div>
+
+                      </div>
+
+
+                      <!-- Login Message -->
+                      <div
+                        style="
+                          background-color:#eef2ff;
+                          border-radius:8px;
+                          padding:20px;
+                          margin-bottom:30px;
+                          text-align:center;
+                        "
+                      >
+
+                        <p
+                          style="
+                            margin:0;
+                            color:#3730a3;
+                            font-size:15px;
+                            line-height:1.5;
+                          "
+                        >
+                          You can now log in to your
+                          <strong>Drive4Pass account</strong>
+                          using your email address and the new password.
+                        </p>
+
+                      </div>
+
+
+                      <!-- Security Warning -->
+                      <div
+                        style="
+                          background-color:#fff1f2;
+                          border-radius:8px;
+                          padding:20px;
+                          margin-bottom:30px;
+                          text-align:center;
+                        "
+                      >
+
+                        <p
+                          style="
+                            margin:0;
+                            color:#be123c;
+                            font-size:14px;
+                            line-height:1.5;
+                          "
+                        >
+                          <strong>Security Notice</strong>
+                          <br><br>
+
+                          If you did not expect this password change,
+                          please contact the Drive4Pass team immediately.
+                        </p>
+
+                      </div>
+
+
+                      <hr
+                        style="
+                          border:0;
+                          border-top:1px solid #e2e8f0;
+                          margin:40px 0;
+                        "
+                      >
+
+
+                      <p
+                        style="
+                          color:#0f172a;
+                          font-size:16px;
+                          font-weight:600;
+                          text-align:center;
+                          margin:0;
+                        "
+                      >
+                        Warm regards,
+                        <br>
+
+                        <span
+                          style="
+                            color:#4f46e5;
+                            font-size:18px;
+                            display:inline-block;
+                            margin-top:5px;
+                          "
+                        >
+                          Drive4Pass Team
+                        </span>
+                      </p>
+
+                    </td>
+                  </tr>
+
+
+                  <!-- Footer -->
+                  <tr>
+                    <td
+                      style="
+                        background-color:#f8fafc;
+                        padding:25px;
+                        text-align:center;
+                        border-top:1px solid #e2e8f0;
+                      "
+                    >
+
+                      <p
+                        style="
+                          margin:0;
+                          color:#94a3b8;
+                          font-size:13px;
+                        "
+                      >
+                        © ${new Date().getFullYear()} Drive4Pass.
+                        All rights reserved.
+                      </p>
+
+                      <p
+                        style="
+                          margin:8px 0 0;
+                          color:#cbd5e1;
+                          font-size:12px;
+                        "
+                      >
+                        This is an automated email. Please do not reply directly.
+                      </p>
+
+                    </td>
+                  </tr>
+
+                </table>
+
+              </td>
+            </tr>
+          </table>
+
+        </body>
+        </html>
+      `,
+    });
+
+    console.log(
+      "Pupil password changed email sent:",
+      info.messageId
+    );
+
+    return info;
+
+  } catch (error) {
+
+    console.error(
+      "PupilPasswordChanged email error:",
+      error
+    );
+
   }
 };
