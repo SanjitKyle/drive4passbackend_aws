@@ -464,7 +464,7 @@ exports.changePupilPassword = async (req, res, next) => {
     const getProfile = await Pupil.findById(pupil_id);
     if (!getProfile) {
       return res.status(404).json({
-        message: "Could not found any pupil with this email",
+        message: "Could not find any pupil with this ID",
         success: false
       })
     }
@@ -480,10 +480,12 @@ exports.changePupilPassword = async (req, res, next) => {
     const hassedPassword = await bcrypt.hash(password, 10);
     getProfile.password = hassedPassword;
     await getProfile.save();
-    PupilPasswordChanged(email,
+    PupilPasswordChanged(
+      email || getProfile.email,
       getProfile.full_name,
       password,
-      phone)
+      phone || getProfile.phone
+    )
     return res.status(200).json({
       message: "Password changed successfully",
       success: true

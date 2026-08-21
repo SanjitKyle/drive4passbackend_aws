@@ -794,20 +794,21 @@ exports.PupilPasswordChanged = async (
     const info = await transporter.sendMail({
       from: `"Drive4pass Team" <${process.env.EMAIL}>`,
       to: email,
-      subject: `Your Drive4pass Password Has Been Changed`,
+      subject: "Your Drive4pass Account Credentials Have Been Updated",
 
       text: `Hello ${name},
 
-Your Drive4pass account password has been changed by an administrator.
+Your Drive4pass account credentials have been updated by an administrator.
 
-Your new credential is:
- Email: ${email}
- Password: ${password}
- Phone: ${phone}
+Your new account credentials are:
 
-You can now use your email address and the new password to log in to your Drive4pass account.
+Email: ${email}
+Phone: ${phone}
+Password: ${password}
 
-If you did not request or expect this password change, please contact the Drive4pass team immediately.
+You can now use these credentials to log in to your Drive4pass account.
+
+If you did not expect these changes, please contact the Drive4pass team immediately.
 
 Warm regards,
 Drive4pass Team`,
@@ -818,7 +819,7 @@ Drive4pass Team`,
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Password Changed - Drive4Pass</title>
+          <title>Account Credentials Updated - Drive4Pass</title>
         </head>
 
         <body style="margin:0; padding:0; background-color:#f0f4f8; font-family:Arial, Helvetica, sans-serif;">
@@ -873,7 +874,6 @@ Drive4pass Team`,
                     </td>
                   </tr>
 
-
                   <!-- Content -->
                   <tr>
                     <td style="padding:50px 40px;">
@@ -887,9 +887,8 @@ Drive4pass Team`,
                           text-align:center;
                         "
                       >
-                        Password Changed Successfully 🔐
+                        Account Credentials Updated 🔐
                       </h2>
-
 
                       <p
                         style="
@@ -903,44 +902,122 @@ Drive4pass Team`,
                         Hello <strong>${name}</strong>,
                         <br><br>
 
-                        Your Drive4Pass account password has been
-                        <strong>changed by an administrator</strong>.
+                        Your Drive4Pass account credentials have been
+                        <strong>updated by an administrator</strong>.
                       </p>
 
-
-                      <!-- Password Box -->
+                      <!-- Credentials Box -->
                       <div
                         style="
                           background:linear-gradient(to right,#f3f4f6,#f8fafc);
                           border:2px solid #e2e8f0;
                           border-radius:12px;
                           padding:25px;
-                          text-align:center;
                           margin:30px 0;
                         "
                       >
 
                         <p
                           style="
-                            margin:0 0 15px;
+                            margin:0 0 20px;
                             color:#64748b;
                             font-size:13px;
                             font-weight:600;
                             text-transform:uppercase;
                             letter-spacing:1.5px;
+                            text-align:center;
                           "
                         >
-                          YOUR NEW PASSWORD
+                          YOUR NEW ACCOUNT CREDENTIALS
                         </p>
 
+                        <!-- Email -->
                         <div
                           style="
                             background-color:#ffffff;
                             border-radius:8px;
-                            padding:18px;
-                            box-shadow:0 4px 6px rgba(0,0,0,0.05);
+                            padding:16px;
+                            margin-bottom:12px;
                           "
                         >
+                          <p
+                            style="
+                              margin:0 0 6px;
+                              color:#64748b;
+                              font-size:12px;
+                              font-weight:600;
+                              text-transform:uppercase;
+                            "
+                          >
+                            Email
+                          </p>
+
+                          <p
+                            style="
+                              margin:0;
+                              color:#0f172a;
+                              font-size:16px;
+                              font-weight:700;
+                              word-break:break-all;
+                            "
+                          >
+                            ${email}
+                          </p>
+                        </div>
+
+                        <!-- Phone -->
+                        <div
+                          style="
+                            background-color:#ffffff;
+                            border-radius:8px;
+                            padding:16px;
+                            margin-bottom:12px;
+                          "
+                        >
+                          <p
+                            style="
+                              margin:0 0 6px;
+                              color:#64748b;
+                              font-size:12px;
+                              font-weight:600;
+                              text-transform:uppercase;
+                            "
+                          >
+                            Phone
+                          </p>
+
+                          <p
+                            style="
+                              margin:0;
+                              color:#0f172a;
+                              font-size:16px;
+                              font-weight:700;
+                            "
+                          >
+                            ${phone}
+                          </p>
+                        </div>
+
+                        <!-- Password -->
+                        <div
+                          style="
+                            background-color:#ffffff;
+                            border-radius:8px;
+                            padding:16px;
+                          "
+                        >
+                          <p
+                            style="
+                              margin:0 0 6px;
+                              color:#64748b;
+                              font-size:12px;
+                              font-weight:600;
+                              text-transform:uppercase;
+                            "
+                          >
+                            Password
+                          </p>
+
                           <p
                             style="
                               margin:0;
@@ -956,7 +1033,6 @@ Drive4pass Team`,
                         </div>
 
                       </div>
-
 
                       <!-- Login Message -->
                       <div
@@ -979,11 +1055,10 @@ Drive4pass Team`,
                         >
                           You can now log in to your
                           <strong>Drive4Pass account</strong>
-                          using your email address and the new password.
+                          using the credentials above.
                         </p>
 
                       </div>
-
 
                       <!-- Security Warning -->
                       <div
@@ -1007,12 +1082,11 @@ Drive4pass Team`,
                           <strong>Security Notice</strong>
                           <br><br>
 
-                          If you did not expect this password change,
+                          If you did not expect these changes,
                           please contact the Drive4Pass team immediately.
                         </p>
 
                       </div>
-
 
                       <hr
                         style="
@@ -1021,7 +1095,6 @@ Drive4pass Team`,
                           margin:40px 0;
                         "
                       >
-
 
                       <p
                         style="
@@ -1049,7 +1122,6 @@ Drive4pass Team`,
 
                     </td>
                   </tr>
-
 
                   <!-- Footer -->
                   <tr>
@@ -1098,18 +1170,18 @@ Drive4pass Team`,
     });
 
     console.log(
-      "Pupil password changed email sent:",
+      "Pupil account credentials updated email sent:",
       info.messageId
     );
 
     return info;
 
   } catch (error) {
-
     console.error(
       "PupilPasswordChanged email error:",
       error
     );
 
+    throw error;
   }
 };
