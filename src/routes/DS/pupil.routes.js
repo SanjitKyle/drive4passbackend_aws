@@ -67,6 +67,94 @@ router.get("/pupils", PupilController.getAllPupils);
 
 /**
  * @swagger
+ * /ds/pupils/delete/{id}:
+ *   get:
+ *     summary: Soft delete a pupil
+ *     tags: [Pupil]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Pupil deleted successfully
+ *       404:
+ */
+router.get("/pupils/delete/:id", PupilController.deletePupil);
+
+/**
+ * @swagger
+ * /ds/pupils/regenerate-invitation:
+ *   post:
+ *     summary: Regenerate invitation code for a pupil and send email
+ *     tags: [Pupil]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - pupil_id
+ *             properties:
+ *               pupil_id:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Invite code regenerated and email sent
+ *       400:
+ *         description: pupil_id is required
+ *       404:
+ *         description: Pupil not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/pupils/regenerate-invitation", PupilController.reGenerateInviteCode);
+
+/**
+ * @swagger
+ * /ds/pupils/changepassword:
+ *   post:
+ *     summary: Change pupil password and send email
+ *     tags: [Pupil]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: pupil@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: MyNewPassword123
+ *     responses:
+ *       200:
+ *         description: Password changed successfully and email sent
+ *       400:
+ *         description: Email and password are required
+ *       404:
+ *         description: Pupil not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/pupils/changepassword", PupilController.changePupilPassword);
+
+/**
+ * @swagger
  * /ds/pupils/{id}:
  *   get:
  *     summary: Get a single pupil by ID
@@ -131,96 +219,5 @@ router.get("/pupils/:id", PupilController.getPupilById);
  *         description: Pupil not found
  */
 router.post("/pupils/:id", PupilController.updatePupil);
-
-/**
- * @swagger
- * /ds/pupils/delete/{id}:
- *   get:
- *     summary: Soft delete a pupil
- *     tags: [Pupil]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Pupil deleted successfully
- *       404:
- */
-router.get("/pupils/delete/:id", PupilController.deletePupil);
-
-/**
- * @swagger
- * /ds/pupils/regenerate-invitation:
- *   post:
- *     summary: Regenerate invitation code for a pupil and send email
- *     tags: [Pupil]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - pupil_id
- *             properties:
- *               pupil_id:
- *                 type: string
- *     responses:
- *       200:
- *         description: Invite code regenerated and email sent
- *       400:
- *         description: pupil_id is required
- *       404:
- *         description: Pupil not found
- *       500:
- *         description: Internal server error
- */
-router.post("/pupils/changepassword", PupilController.reGenerateInviteCode);
-
-/**
- * @swagger
- * /ds/pupils/changepassword:
- *   post:
- *     summary: Change pupil password and send email
- *     tags: [Pupil]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 example: pupil@example.com
- *               password:
- *                 type: string
- *                 format: password
- *                 example: MyNewPassword123
- *     responses:
- *       200:
- *         description: Password changed successfully and email sent
- *       400:
- *         description: Email and password are required
- *       404:
- *         description: Pupil not found
- *       500:
- *         description: Internal server error
- */
-router.post(
-  "/pupils/changepassword",
-  PupilController.changePupilPassword
-);
 
 module.exports = router;
