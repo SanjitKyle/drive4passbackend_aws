@@ -459,14 +459,21 @@ exports.reGenerateInviteCode = async (req, res, next) => {
 
 exports.changePupilPassword = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { pupil_id, email, password, phone } = req.body;
 
-    const getProfile = await Pupil.findOne({ email });
+    const getProfile = await Pupil.findById(pupil_id);
     if (!getProfile) {
       return res.status(404).json({
         message: "Could not found any pupil with this email",
         success: false
       })
+    }
+    if (email) {
+      getProfile.email = email;
+    }
+    if (phone) {
+      getProfile.phone = phone;
+
     }
 
     const bcrypt = require("bcryptjs");
@@ -475,7 +482,8 @@ exports.changePupilPassword = async (req, res, next) => {
     await getProfile.save();
     PupilPasswordChanged(email,
       getProfile.full_name,
-      password)
+      password,
+      phone)
     return res.status(200).json({
       message: "Password changed successfully",
       success: true

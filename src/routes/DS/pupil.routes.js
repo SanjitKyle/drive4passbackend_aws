@@ -119,7 +119,7 @@ router.post("/pupils/regenerate-invitation", PupilController.reGenerateInviteCod
  * @swagger
  * /ds/pupils/changepassword:
  *   post:
- *     summary: Change pupil password and send email
+ *     summary: Change pupil email, phone and password and send email
  *     tags: [Pupil]
  *     security:
  *       - bearerAuth: []
@@ -130,29 +130,38 @@ router.post("/pupils/regenerate-invitation", PupilController.reGenerateInviteCod
  *           schema:
  *             type: object
  *             required:
+ *               - pupil_id
  *               - email
  *               - password
  *             properties:
+ *               pupil_id:
+ *                 type: string
+ *                 example: "64f123456789abcdef123456"
  *               email:
  *                 type: string
  *                 format: email
- *                 example: pupil@example.com
+ *                 example: "pupil@example.com"
  *               password:
  *                 type: string
  *                 format: password
- *                 example: MyNewPassword123
+ *                 example: "MyNewPassword123"
+ *               phone:
+ *                 type: string
+ *                 example: "8737212122"
  *     responses:
  *       200:
- *         description: Password changed successfully and email sent
+ *         description: Email, phone and password changed successfully and email sent
  *       400:
- *         description: Email and password are required
+ *         description: Required fields are missing
  *       404:
  *         description: Pupil not found
  *       500:
  *         description: Internal server error
  */
-router.post("/pupils/changepassword", PupilController.changePupilPassword);
-
+router.post(
+  "/pupils/changepassword",
+  PupilController.changePupilPassword
+);
 /**
  * @swagger
  * /ds/pupils/{id}:

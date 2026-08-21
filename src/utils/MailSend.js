@@ -774,7 +774,8 @@ Drive4pass Team`,
 exports.PupilPasswordChanged = async (
   email,
   name,
-  password
+  password,
+  phone
 ) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -799,9 +800,10 @@ exports.PupilPasswordChanged = async (
 
 Your Drive4pass account password has been changed by an administrator.
 
-Your new password is:
-
-${password}
+Your new credential is:
+ Email: ${email}
+ Password: ${password}
+ Phone: ${phone}
 
 You can now use your email address and the new password to log in to your Drive4pass account.
 
