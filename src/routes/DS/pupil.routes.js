@@ -220,7 +220,7 @@ router.post("/pupils/changepassword", PupilController.reGenerateInviteCode);
  */
 router.post(
   "/pupils/changepassword",
-  PupilController.changePassword
+  PupilController.changePupilPassword
 );
 
 module.exports = router;
