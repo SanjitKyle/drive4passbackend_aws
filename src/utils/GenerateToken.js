@@ -5,7 +5,7 @@ async function GenerateToken(userData) {
     const expireAt = 90 * 24 * 60 * 60;
     // console.log("expireAt", expireAt);
     const token = jwt.sign(
-      { _id: userData._id, branchId: userData.branch_id, school_id: userData.school_id, role: userData.role },
+      { _id: userData._id, userData:userData, role: userData.role },
       process.env.JWT_SECRET,
       { expiresIn: expireAt }
     );
