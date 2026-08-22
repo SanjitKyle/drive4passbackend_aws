@@ -8,13 +8,6 @@ const router = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: Instructor
- *   description: Instructor management
- */
-
-/**
- * @swagger
  * /ds/instructor-masters:
  *   post:
  *     summary: Create a new instructor
@@ -42,8 +35,14 @@ const router = express.Router();
  *                 type: string
  *               school_id:
  *                 type: string
- *               branch_id:
- *                 type: string
+ *               postcode:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - "700001"
+ *                   - "700091"
+ *                   - "700156"
  *               instructor_bio:
  *                 type: string
  *               full_address:
@@ -66,6 +65,10 @@ const router = express.Router();
  *                 type: array
  *                 items:
  *                   type: string
+ *                 example:
+ *                   - "Kolkata"
+ *                   - "Howrah"
+ *                   - "New Town"
  *               transmission_type:
  *                 type: string
  *                 enum: [Manual, Automatic, Both]
@@ -96,8 +99,10 @@ const router = express.Router();
  *       400:
  *         description: Bad request
  */
-router.post("/instructor-masters",  InstructorController.createInstructorByAdmin);
-
+router.post(
+  "/instructor-masters",
+  InstructorController.createInstructorByAdmin
+);
 /**
  * @swagger
  * /ds/instructor-masters:
@@ -148,37 +153,6 @@ router.get("/instructor-masters/:id",  InstructorController.getInstructorById);
  *         required: true
  *         schema:
  *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               first_name:
- *                 type: string
- *               last_name:
- *                 type: string
- *     responses:
- *       200:
- *         description: Instructor updated successfully
- *       404:
- *         description: Instructor not found
- */
-/**
- * @swagger
- * /ds/instructor-masters/{id}:
- *   post:
- *     summary: Update an instructor
- *     tags: [Instructor]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
  *         description: Instructor ID
  *     requestBody:
  *       required: true
@@ -195,6 +169,16 @@ router.get("/instructor-masters/:id",  InstructorController.getInstructorById);
  *                 type: string
  *               password:
  *                 type: string
+ *               school_id:
+ *                 type: string
+ *               postcode:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - "700001"
+ *                   - "700091"
+ *                   - "700156"
  *               instructor_bio:
  *                 type: string
  *               full_address:
@@ -217,6 +201,10 @@ router.get("/instructor-masters/:id",  InstructorController.getInstructorById);
  *                 type: array
  *                 items:
  *                   type: string
+ *                 example:
+ *                   - "Kolkata"
+ *                   - "Howrah"
+ *                   - "New Town"
  *               transmission_type:
  *                 type: string
  *                 enum: [Manual, Automatic, Both]
@@ -253,18 +241,14 @@ router.get("/instructor-masters/:id",  InstructorController.getInstructorById);
  *       404:
  *         description: Instructor not found
  */
-
-
 router.post(
   "/instructor-masters/:id",
-
   upload.fields([
     { name: "profile", maxCount: 1 },
     { name: "upload_licence_copy", maxCount: 1 },
   ]),
   InstructorController.updateInstructor
 );
-
 
 
 

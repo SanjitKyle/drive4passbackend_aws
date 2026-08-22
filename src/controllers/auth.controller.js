@@ -190,7 +190,7 @@ exports.instructorSingup = async (req, res, next) => {
       mobile,
       password,
       school_id,
-      branch_id,
+      postcode,
       instructor_bio,
       full_address,
       driving_lichence_number,
@@ -250,7 +250,7 @@ exports.instructorSingup = async (req, res, next) => {
       email,
       mobile,
       school_id,
-      branch_id,
+      postcode,
       instructor_bio,
       full_address,
       password: password,
@@ -362,7 +362,7 @@ exports.validateToken = async (req, res, next) => {
     const userId = req.user._id;
     if (!userId) return res.json({ message: "User ID Not Found" });
     const userData = await UserModel.findById(userId).populate(
-      "branch_id",
+     
       "name",
     );
     res.json({ status: true, message: "Token validated.", user: userData });

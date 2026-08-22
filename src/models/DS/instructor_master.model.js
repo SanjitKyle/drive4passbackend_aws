@@ -7,20 +7,6 @@ const InstructorMasterSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "school",
     },
-    profile: {
-      type: String,
-    },
-    instructor_user_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
-    },
-    password: {
-      type: String,
-    },
-    branch_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "area",
-    },
     name: {
       type: String,
       trim: true,
@@ -42,6 +28,21 @@ const InstructorMasterSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    profile: {
+      type: String,
+    },
+    instructor_user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+    password: {
+      type: String,
+    },
+
+    postcode: [{
+      type: String
+    }]
+    ,
     approved_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
@@ -51,7 +52,7 @@ const InstructorMasterSchema = new mongoose.Schema(
       enum: [0, 1],
       default: 0, // 1 = active, 0 = inactive
     },
-    
+
     // --- DRIVING & QUALIFICATIONS ---
     driving_lichence_number: {
       type: String,
@@ -79,7 +80,7 @@ const InstructorMasterSchema = new mongoose.Schema(
       enum: ["Manual", "Automatic", "Both", ""],
       default: "Both",
     },
-    
+
     // --- NEW FRANCHISE & WORK FIELDS ---
     work_type: {
       type: String,
@@ -120,7 +121,7 @@ const InstructorMasterSchema = new mongoose.Schema(
     upload_licence_copy: {
       type: String,
     },
-    
+
     // --- AUDIT & DELETION ---
     deleted_at: {
       type: Date,
