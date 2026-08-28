@@ -342,7 +342,7 @@ exports.instructorLogin = async (req, res, next) => {
 
     // 6. Find instructor data
     const instructorData = await InstructorMaster.findOne({
-      instructor_user_model_id: userData._id,
+      instructor_user_id: userData._id,
     }).select("-password");
 
     return res.status(200).json({
