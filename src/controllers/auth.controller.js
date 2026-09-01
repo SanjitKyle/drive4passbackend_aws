@@ -222,7 +222,9 @@ exports.instructorSingup = async (req, res, next) => {
     const upload_licence_copy = await uploadToS3(req.file.path, "instructors/licence", req.file.mimetype);
 
     // 2️⃣ Remove local file
-    fs.unlinkSync(req.file.path);
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
 
     // 3️⃣ Validations
     const existingUser = await UserModel.findOne({ email });

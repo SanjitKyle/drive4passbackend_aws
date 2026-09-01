@@ -136,7 +136,9 @@ exports.updateInstructor = async (req, res, next) => {
       const secureUrl = await uploadToS3(file.path, "instructors/profile", file.mimetype);
 
       updatedData.profile = secureUrl;
-      fs.unlinkSync(file.path);
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
     }
 
     // LICENCE COPY
@@ -145,7 +147,9 @@ exports.updateInstructor = async (req, res, next) => {
       const secureUrl = await uploadToS3(file.path, "instructors/licence", file.mimetype);
 
       updatedData.upload_licence_copy = secureUrl;
-      fs.unlinkSync(file.path);
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
     }
 
     const updated = await InstructorMaster.findOneAndUpdate(
@@ -219,7 +223,7 @@ exports.deleteInstructor = async (req, res, next) => {
 };
 exports.confirmInstructor = async (req, res) => {
   try {
-    const approvedBy = req.user._id;
+    const approvedBy = req.user?._id;
     const instructorId = req.params.id;
 
     if (!instructorId) {
@@ -240,7 +244,8 @@ exports.confirmInstructor = async (req, res) => {
       });
     }
 
-    const businessName = instructor.school_id.school_name ?? "Drive4pass";
+    const schoolId = instructor.school_id?._id || instructor.school_id || req.user?.school_id;
+    const businessName = instructor.school_id?.school_name || "Drive4pass";
 
     // Ensure a password exists before proceeding
     let passwordToUse = instructor.password;
@@ -259,10 +264,19 @@ exports.confirmInstructor = async (req, res) => {
     // Check if instructor user already exists
     let instructorUser = await UserModel.findOne({
       email: instructor.email,
-      role: "instructor",
     });
 
     const hashedPassword = await bcrypt.hash(passwordToUse, 10);
+
+    // If branch_id is missing, try to find a branch for this school
+    let branchId = instructor.branch_id;
+    if (!branchId && schoolId) {
+      const BranchModel = require('../../models/branch.model');
+      const defaultBranch = await BranchModel.findOne({ school_id: schoolId });
+      if (defaultBranch) {
+        branchId = defaultBranch._id;
+      }
+    }
 
     // Create user if not exists
     if (!instructorUser) {
@@ -272,11 +286,18 @@ exports.confirmInstructor = async (req, res) => {
         mobile: instructor.mobile,
         password: hashedPassword,
         role: "instructor",
-        school_id: instructor.school_id._id,
-        branch_id: instructor.branch_id,
+        school_id: schoolId || null,
+        branch_id: branchId || null,
         status: 1,
       });
 
+      await instructorUser.save();
+    } else {
+      instructorUser.role = "instructor";
+      instructorUser.status = 1;
+      instructorUser.password = hashedPassword;
+      if (schoolId) instructorUser.school_id = schoolId;
+      if (branchId) instructorUser.branch_id = branchId;
       await instructorUser.save();
     }
 
@@ -287,13 +308,17 @@ exports.confirmInstructor = async (req, res) => {
       { new: true }
     );
 
-
-    await InstructorConfirmMail(
-      businessName,
-      instructor.email,
-      passwordToUse, // Send the plain-text password to the user
-      instructor.name
-    );
+    // Send confirmation email safely
+    try {
+      await InstructorConfirmMail(
+        businessName,
+        instructor.email,
+        passwordToUse, // Send the plain-text password to the user
+        instructor.name
+      );
+    } catch (mailErr) {
+      console.error("Failed to send instructor confirmation email:", mailErr);
+    }
 
     return res.status(200).json({
       message: "Instructor approved successfully",
@@ -302,7 +327,7 @@ exports.confirmInstructor = async (req, res) => {
   } catch (error) {
     console.error("Confirm Instructor Error:", error);
     return res.status(500).json({
-      message: "Internal server error",
+      message: error.message || "Internal server error",
       success: false,
     });
   }

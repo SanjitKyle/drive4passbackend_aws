@@ -25,25 +25,25 @@ const storage = multer.diskStorage({
   }
 });
 
-// Allow all images and PDF files
+// Allow all image formats and PDF files
 const fileFilter = (req, file, cb) => {
-  const ext = path.extname(file.originalname).toLowerCase();
-  const isImageMime = file.mimetype && file.mimetype.startsWith("image/");
-  const isPdfMime = file.mimetype === "application/pdf";
-  const imageExtensions = /\.(jpeg|jpg|png|gif|webp|avif|svg|bmp|tiff|tif|heic|heif|ico|jfif)$/i;
+  const ext = path.extname(file.originalname || "").toLowerCase();
+  const isImageMime = file.mimetype && file.mimetype.toLowerCase().startsWith("image/");
+  const isPdfMime = file.mimetype && file.mimetype.toLowerCase() === "application/pdf";
+  const imageExtensions = /\.(jpeg|jpg|png|gif|webp|avif|svg|bmp|tiff|tif|heic|heif|ico|jfif|raw|cr2|nef|orf|sr2)$/i;
   const isImageExt = imageExtensions.test(ext);
   const isPdfExt = ext === ".pdf";
 
   if (isImageMime || isPdfMime || isImageExt || isPdfExt) {
     cb(null, true);
   } else {
-    cb(new Error("Only image and PDF files are allowed"));
+    cb(new Error("Invalid file format. Please upload an image file (PNG, JPG, JPEG, WEBP, GIF, etc.) or a PDF document."));
   }
 };
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter
 });
 

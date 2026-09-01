@@ -11,8 +11,8 @@ const userSchema = new mongoose.Schema({
     enum: ['superadmin', 'admin', 'branch_manager', 'staff', 'student', 'instructor'], 
     default: 'student' 
   },   
-  school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'school', required: true },
-  branch_id: { type: mongoose.Schema.Types.ObjectId, ref: 'branch', required: true },  	
+  school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'school' },
+  branch_id: { type: mongoose.Schema.Types.ObjectId, ref: 'branch', default: null },  	
   status: { type: Number, required: true },
 
   created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', default: null }, 

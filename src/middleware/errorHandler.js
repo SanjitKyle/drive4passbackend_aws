@@ -45,9 +45,19 @@ const errorHandler = function (err, req, res, next) {
     // });
   }
 
+  // Multer errors (e.g. file size, file filter errors)
+  if (err?.name === 'MulterError' || err?.code === 'LIMIT_FILE_SIZE') {
+    return res.status(200).json({
+      status: false,
+      message: err.message || 'File upload error',
+      error_message: err.message || 'File upload error',
+      errors: process.env.NODE_ENV === 'development' ? err : {}
+    });
+  }
+
   res.status(200).json({ 
     status: false, 
-    message: 'something went wrong !!', 
+    message: err.message || 'something went wrong !!', 
     error_message: err.message || 'Internal Server Error',
     errors: process.env.NODE_ENV === 'development' ? err : {}
   });
