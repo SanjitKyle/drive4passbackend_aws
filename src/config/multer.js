@@ -25,18 +25,19 @@ const storage = multer.diskStorage({
   }
 });
 
-// optional but STRONGLY recommended
+// Allow all images and PDF files
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|pdf|avif/;
-  const isValidExt = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  );
-  const isValidMime = allowedTypes.test(file.mimetype);
+  const ext = path.extname(file.originalname).toLowerCase();
+  const isImageMime = file.mimetype && file.mimetype.startsWith("image/");
+  const isPdfMime = file.mimetype === "application/pdf";
+  const imageExtensions = /\.(jpeg|jpg|png|gif|webp|avif|svg|bmp|tiff|tif|heic|heif|ico|jfif)$/i;
+  const isImageExt = imageExtensions.test(ext);
+  const isPdfExt = ext === ".pdf";
 
-  if (isValidExt && isValidMime) {
+  if (isImageMime || isPdfMime || isImageExt || isPdfExt) {
     cb(null, true);
   } else {
-    cb(new Error("Only JPG, PNG, and PDF files are allowed"));
+    cb(new Error("Only image and PDF files are allowed"));
   }
 };
 
