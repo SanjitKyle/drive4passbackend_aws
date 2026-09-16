@@ -12,9 +12,9 @@ const { sendNotification } = require("./message_token_store");
 
 exports.createBooking = async (req, res, next) => {
   try {
-    const created_by = req.user._id;
+    // const created_by = req.user._id;
 
-    const {
+    let {
       pupil_id,
       instructor_id,
       title,
@@ -29,8 +29,20 @@ exports.createBooking = async (req, res, next) => {
       pupil_summary,
       status,
       sell_id,
-      color
+      color,
+      created_by
     } = req.body;
+
+    if (!created_by) {
+      created_by =
+        req.user?._id ||
+        req.user?.userId ||
+        req.user?.id ||
+        req.user?.userData?._id ||
+        pupil_id ||
+        null;
+    }
+
 
     // =============================
     // REQUIRED FIELD VALIDATION
@@ -484,7 +496,7 @@ exports.updateBookingStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
     const booking_id = req.params.id;
-    const created_by = req.user._id;
+    const created_by = req.user?._id || req.user?.userId || req.user?.id || null;
     console.log('calling....')
 
     const allowedStatus = [
@@ -583,7 +595,7 @@ exports.deleteBooking = async (req, res, next) => {
     }
 
     existingBooking.deleted_at = new Date();
-    existingBooking.deleted_by = req.user._id;
+    existingBooking.deleted_by = req.user?._id || req.user?.userId || req.user?.id || null;
 
     await existingBooking.save();
 

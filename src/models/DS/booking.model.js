@@ -75,7 +75,7 @@ const BookingSchema = new mongoose.Schema({
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
-        required: true,
+        default: null,
     },
     updated_by: {
         type: mongoose.Schema.Types.ObjectId,
