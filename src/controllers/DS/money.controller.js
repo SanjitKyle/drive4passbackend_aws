@@ -6,7 +6,6 @@ const Pricing = require("../../models/DS/price_master.model")
 exports.addMoney = async (req, res, next) => {
     try {
         const { pupil_id, instructor_id, payment_method, amount, sell_id } = req.body;
-        const school_id = req.user.school_id;
         const loggedInUserId = req.user._id;
 
         // ✅ Validation
@@ -46,7 +45,6 @@ exports.addMoney = async (req, res, next) => {
 
         // 1. Create the money record first
         const created = await Money.create({
-            school_id,
             pupil_id,
             instructor_id: instructor_id || null,
             payment_method,
@@ -101,11 +99,10 @@ exports.addMoney = async (req, res, next) => {
 exports.editMoney = async (req, res, next) => {
     try {
         const money_id = req.params.id;
-        const school_id = req.user.school_id;
 
         const { payment_method, amount, instructor_id, sell_id } = req.body;
 
-        const existingMoney = await Money.findOne({ _id: money_id, school_id });
+        const existingMoney = await Money.findOne({ _id: money_id });
         if (!existingMoney) {
             return res.status(404).json({
                 success: false,
@@ -148,7 +145,7 @@ exports.editMoney = async (req, res, next) => {
 
         // 1. Update the money record first securely using validated data
         const updated = await Money.findOneAndUpdate(
-            { _id: money_id, school_id },
+            { _id: money_id },
             { $set: updateData },
             { new: true }
         );
@@ -199,7 +196,6 @@ exports.editMoney = async (req, res, next) => {
 exports.getInstructorMoney = async (req, res, next) => {
     try {
         const instructor_id = req.params.id;
-        const school_id = req.user.school_id;
 
         if (!instructor_id) {
             return res.status(400).json({
@@ -210,7 +206,6 @@ exports.getInstructorMoney = async (req, res, next) => {
 
         const records = await Money.find({
             instructor_id,
-            school_id,
             deleted_at: null
         })
             .populate("pupil_id", "full_name email").populate("instructor_id", "name email").populate("sell_id")
@@ -239,14 +234,13 @@ exports.getInstructorMoney = async (req, res, next) => {
 exports.getPupilMoney = async (req, res, next) => {
     try {
         const pupilId = req.params.id;
-        const school_id = req.user.school_id;
         if (!pupilId) {
             return res.status(404).json({
                 message: "Provide Pupil id "
             })
         }
 
-        const money = await Money.find({ pupil_id: pupilId, school_id, deleted_at: null }).populate('pupil_id').populate('instructor_id').populate('sell_id');
+        const money = await Money.find({ pupil_id: pupilId, deleted_at: null }).populate('pupil_id').populate('instructor_id').populate('sell_id');
         return res.status(201).json(money)
 
     } catch (error) {
@@ -260,7 +254,6 @@ exports.getPupilMoney = async (req, res, next) => {
 exports.deleteInstructorMoney = async (req, res, next) => {
     try {
         const instructor_id = req.params.id;
-        const school_id = req.user.school_id;
         const loggedInUserId = req.user._id;
 
         if (!instructor_id) {
@@ -279,7 +272,7 @@ exports.deleteInstructorMoney = async (req, res, next) => {
         }
 
         // Find records before deleting to recalculate sales
-        const recordsToDelete = await Money.find({ instructor_id, school_id, deleted_at: null });
+        const recordsToDelete = await Money.find({ instructor_id, deleted_at: null });
 
         if (recordsToDelete.length === 0) {
             return res.status(404).json({
@@ -290,7 +283,7 @@ exports.deleteInstructorMoney = async (req, res, next) => {
 
         // Soft delete the records
         await Money.updateMany(
-            { instructor_id, school_id, deleted_at: null },
+            { instructor_id, deleted_at: null },
             { $set: { deleted_at: new Date(), deleted_by: loggedInUserId } }
         );
 

@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const BookingSchema = new mongoose.Schema({
-    school_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "school"
-    },
     title: {
         type: String
     },
@@ -56,10 +52,7 @@ const BookingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    created_by: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user"
-    },
+   
     status: {
         type: String,
         enum: ["booking_request", "pending", "booked", "completed", "cancelled"],

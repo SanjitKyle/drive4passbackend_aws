@@ -31,7 +31,6 @@ const auth = require("../../middleware/auth.middleware");
  *               - pupil_id
  *               - credit_hours
  *               - reference
- *               - school_id
  *             properties:
  *               pupil_id:
  *                 type: string
@@ -42,9 +41,6 @@ const auth = require("../../middleware/auth.middleware");
  *               reference:
  *                 type: string
  *                 description: Source of credit (e.g. sale, booking)
- *               school_id:
- *                 type: string
- *                 description: School ID
  *               created_by:
  *                 type: string
  *                 description: User who created the log

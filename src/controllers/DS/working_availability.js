@@ -33,9 +33,8 @@ exports.createOrUpdateAvailability = async (req, res) => {
 exports.getAvailability = async (req, res) => {
   try {
     const { instructorId } = req.params;
-        const school_id=req.user.school_id;
 
-    const availability = await InstructorAvailability.findOne({ instructorId ,school_id});
+    const availability = await InstructorAvailability.findOne({ instructorId });
 
     if (!availability) {
       return res.status(404).json({ message: "Availability not found" });

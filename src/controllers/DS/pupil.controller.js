@@ -42,7 +42,6 @@ exports.createPupil = async (req, res, next) => {
 
     const created_by = req.user._id;
 
-
     // Instructor
     const instructor =
       await InstructorMaster.findById(instructor_id).session(session);
@@ -50,8 +49,6 @@ exports.createPupil = async (req, res, next) => {
     if (!instructor) {
       throw new Error("Instructor not found");
     }
-
-    const school_id = instructor.school_id;
 
     // Package
     const packageData =
@@ -77,7 +74,6 @@ exports.createPupil = async (req, res, next) => {
           gearbox,
           total_credit: totalHour,
           remaining_hour: totalHour, // Initialize remaining hours
-          school_id,
           pricing: 0,
           active: 1,
           created_by,
@@ -116,7 +112,7 @@ exports.createPupil = async (req, res, next) => {
 
     // insert into sell table
     const credited_hour = packageData.duration;
-    const data = { pupil_id, package_id, credited_hour, created_by, school_id };
+    const data = { pupil_id, package_id, credited_hour, created_by };
 
     const response = await InsertIntoSell(data, session); // session added
 
@@ -125,22 +121,6 @@ exports.createPupil = async (req, res, next) => {
     if (!response) {
       throw new Error("could not insert into sell table");
     }
-
-    // Create credits
-    // const creditResult = await createPupilCredits(
-    //   {
-    //     pupil_id,
-    //     credits: packageData.duration,
-    //     reference: "sale",
-    //     school_id,
-    //     user: created_by,
-    //   },
-    //   session,
-    // );
-
-    // if (!creditResult.success) {
-    //   throw new Error(creditResult.message);
-    // }
 
     if (String(instructor_id) !== String(created_by)) {
       const userToken = await notificationToken.findOne({ user: instructor_id });
@@ -179,7 +159,6 @@ exports.createPupil = async (req, res, next) => {
 exports.updatePupil = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const school_id = req.user.school_id;
 
     // Validate Pupil ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -225,10 +204,6 @@ exports.updatePupil = async (req, res, next) => {
       return next(err);
     }
 
-
-
-
-
     // Optional: if status is sent, ensure it’s 0 or 1
     if (data.status !== undefined) {
       if (![0, 1].includes(data.status)) {
@@ -242,7 +217,7 @@ exports.updatePupil = async (req, res, next) => {
 
     // Update pupil
     const updatedPupil = await Pupil.findOneAndUpdate(
-      { _id: id, deleted_at: null, school_id },
+      { _id: id, deleted_at: null },
       { $set: datatosend },
       { new: true, runValidators: true },
     );
@@ -267,7 +242,6 @@ exports.updatePupil = async (req, res, next) => {
 // GET all pupils
 exports.getAllPupils = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
     const pupils = await Pupil.find({ deleted_at: null })
       .populate("instructor_id")
       .populate("package_id")
@@ -285,7 +259,6 @@ exports.getAllPupils = async (req, res, next) => {
 exports.getPupilById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const school_id = req.user.school_id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const err = new Error("Invalid Pupil ID");
@@ -293,7 +266,7 @@ exports.getPupilById = async (req, res, next) => {
       return next(err);
     }
 
-    const pupil = await Pupil.findOne({ _id: id, deleted_at: null, school_id })
+    const pupil = await Pupil.findOne({ _id: id, deleted_at: null })
       .populate("instructor_id")
       .populate("package_id")
       .populate("area_id")
@@ -316,7 +289,6 @@ exports.getPupilById = async (req, res, next) => {
 exports.deletePupil = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const school_id = req.user.school_id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const err = new Error("Invalid Pupil ID");
@@ -357,11 +329,11 @@ exports.deletePupil = async (req, res, next) => {
     await moneyModel.updateMany({ pupil_id: id, deleted_at: null }, {
       $set: {
         deleted_at: new Date(),
-        deleted_by: req.user_id
+        deleted_by: req.user._id
       }
     })
     const deletedPupil = await Pupil.findOneAndUpdate(
-      { _id: id, deleted_at: null, school_id },
+      { _id: id, deleted_at: null },
       {
         deleted_at: new Date(),
         deleted_by: req.user._id,

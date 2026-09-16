@@ -2,12 +2,12 @@ const pupil_credits = require('../../models/DS/pupil_credits.model');
 const { createCreditLog } = require('./pupil_credits_log.controller');
 
 exports.createPupilCredits = async (obj, session) => {
-  const { pupil_id, credits, reference, school_id, user } = obj;
+  const { pupil_id, credits, reference, user } = obj;
 
-  if (!pupil_id || credits === undefined || !reference || !school_id || !user) {
+  if (!pupil_id || credits === undefined || !reference || !user) {
     return {
       success: false,
-      message: 'pupil_id, credits, reference, school_id and user are required'
+      message: 'pupil_id, credits, reference, and user are required'
     };
   }
 
@@ -28,13 +28,12 @@ exports.createPupilCredits = async (obj, session) => {
     { pupil_id },
     {
       $inc: { credits: creditValue },
-      $set: { school_id, last_updated_by: user },
+      $set: { last_updated_by: user },
     },
     { new: true, upsert: true, session }
   );
 
   const logResult = await createCreditLog({
-    school_id,
     pupil_id,
     credit_hours: creditValue,
     reference,
@@ -50,7 +49,6 @@ exports.createPupilCredits = async (obj, session) => {
 exports.getPupil = async (req, res, next) => {
   try {
     const pupil_id = req.params.id;
-    const school_id=req.user.school_id
 
     if (!pupil_id) {
       return res.status(400).json({
@@ -59,7 +57,7 @@ exports.getPupil = async (req, res, next) => {
       });
     }
 
-    const pupilCredits = await pupil_credits.findOne({ pupil_id ,school_id});
+    const pupilCredits = await pupil_credits.findOne({ pupil_id });
 
     if (!pupilCredits) {
       return res.status(404).json({

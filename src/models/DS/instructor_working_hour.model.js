@@ -2,12 +2,6 @@ const mongoose = require("mongoose");
 
 const InstructorWorkingHourSchema = new mongoose.Schema(
   {
-    school_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "school",
-      required: true,
-      index: true,
-    },
     instructor_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "InstructorMaster",

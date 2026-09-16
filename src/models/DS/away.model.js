@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 
 const AwaySchema = new mongoose.Schema(
     {
-        school_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "school",
-            required: true
-        },
         instructor_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "InstructorMaster",

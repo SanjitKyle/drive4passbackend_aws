@@ -12,7 +12,6 @@ const { sendNotification } = require("./message_token_store");
 
 exports.createBooking = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
     const created_by = req.user._id;
 
     const {
@@ -89,7 +88,7 @@ exports.createBooking = async (req, res, next) => {
     // =============================
     // CHECK INSTRUCTOR TIME CONFLICT
     // =============================
-    const bookings = await booking.find({ 
+    const bookings = await booking.find({
       instructor_id,
       status: { $ne: 'cancelled' },
       deleted_at: null
@@ -121,7 +120,6 @@ exports.createBooking = async (req, res, next) => {
     // =============================
     const allBookings = await booking.find({
       pupil_id,
-      school_id,
     });
 
     const totalPreviousSpent = allBookings.reduce(
@@ -140,16 +138,18 @@ exports.createBooking = async (req, res, next) => {
         message: "Pupil does not have sufficient credit hours",
       });
     }
+    // adding if created by id and instructor id is same so then it will be booked
+
 
     if (instructor_id == created_by) {
       status = 'booked'
     }
 
+
     // =============================
     // CREATE BOOKING
     // =============================
     const createdBooking = await booking.create({
-      school_id,
       instructor_id,
       pupil_id,
       title,
@@ -192,7 +192,6 @@ exports.createBooking = async (req, res, next) => {
         credit_hours: -Number(credit_use),
         reference_id: createdBooking._id,
         reference: "booking",
-        school_id,
         created_by,
       });
 
@@ -212,9 +211,9 @@ exports.createBooking = async (req, res, next) => {
       if (userToSendNotification?.token) {
         let displayDate = booking_date;
         if (typeof displayDate === "string" && displayDate.includes("T")) {
-            displayDate = displayDate.split("T")[0];
+          displayDate = displayDate.split("T")[0];
         } else if (displayDate instanceof Date) {
-            displayDate = displayDate.toISOString().split("T")[0];
+          displayDate = displayDate.toISOString().split("T")[0];
         }
 
         let notificationBody = `New booking request from ${pupil.full_name} scheduled on ${displayDate} at ${start_time}. Please review your schedule.`;
@@ -250,7 +249,6 @@ exports.createBooking = async (req, res, next) => {
 exports.getBooking = async (req, res, next) => {
   try {
     const instructor_id = req.params.id;
-    const school_id = req.user.school_id;
 
     if (!instructor_id) {
       return res.status(400).json({
@@ -262,12 +260,11 @@ exports.getBooking = async (req, res, next) => {
     const bookings = await booking
       .find({
         instructor_id,
-        school_id,
         deleted_at: null,
       })
       .populate("pupil_id")
       .populate("instructor_id")
-      .populate("sell_id");
+      .populate("sell_id").populate('created_by');
     const bookingsData = bookings.filter(
       (b) => b.pupil_id !== null
     );
@@ -284,16 +281,13 @@ exports.getBooking = async (req, res, next) => {
 };
 exports.getAllBookings = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
     const bookings = await booking
       .find({
-        school_id,
         deleted_at: null,
       })
       .populate("pupil_id")
       .populate("instructor_id")
-      .populate("sell_id");
+      .populate("sell_id").populate('created_by');
     const bookingsData = bookings.filter(
       (b) => b.pupil_id !== null
     );
@@ -306,11 +300,9 @@ exports.getAllBookings = async (req, res, next) => {
 exports.updateBooking = async (req, res, next) => {
   try {
     const booking_id = req.params.id;
-    const school_id = req.user.school_id;
 
     const existingBooking = await booking.findOne({
       _id: booking_id,
-      school_id,
     });
 
     if (!existingBooking) {
@@ -351,21 +343,21 @@ exports.updateBooking = async (req, res, next) => {
     // Check for instructor time conflict
     const check_instructor_id = updateData.instructor_id || existingBooking.instructor_id;
     let check_booking_date = updateData.booking_date || existingBooking.booking_date;
-    
+
     if (check_booking_date instanceof Date) {
       check_booking_date = check_booking_date.toISOString().split("T")[0];
     } else if (typeof check_booking_date === "string" && check_booking_date.includes("T")) {
       check_booking_date = check_booking_date.split("T")[0];
     }
-    
+
     const check_start_time = updateData.start_time || existingBooking.start_time;
     const check_end_time = updateData.end_time || existingBooking.end_time;
 
-    const instructorBookings = await booking.find({ 
-      instructor_id: check_instructor_id, 
+    const instructorBookings = await booking.find({
+      instructor_id: check_instructor_id,
       _id: { $ne: booking_id },
       status: { $ne: 'cancelled' },
-      deleted_at: null 
+      deleted_at: null
     });
 
     const isConflict = instructorBookings.some((b) => {
@@ -389,7 +381,7 @@ exports.updateBooking = async (req, res, next) => {
       updateData.end_time
     ) {
       let booking_date = updateData.booking_date || existingBooking.booking_date;
-      
+
       // If it's a Date object from the DB, convert it to YYYY-MM-DD format
       if (booking_date instanceof Date) {
         booking_date = booking_date.toISOString().split("T")[0];
@@ -443,7 +435,7 @@ exports.updateBooking = async (req, res, next) => {
     }
 
     const updatedBooking = await booking.findOneAndUpdate(
-      { _id: booking_id, school_id },
+      { _id: booking_id },
       { $set: updateData },
       { new: true }
     );
@@ -461,7 +453,6 @@ exports.updateBooking = async (req, res, next) => {
 exports.getPupilsBookings = async (req, res, next) => {
   try {
     const pupil_id = req.params.pupil_id;
-    const school_id = req.user.school_id; // from auth middleware
 
     if (!pupil_id) {
       return res.status(400).json({
@@ -473,11 +464,10 @@ exports.getPupilsBookings = async (req, res, next) => {
     const bookings = await booking
       .find({
         pupil_id,
-        school_id,
         deleted_at: null // ✅ secure verification
       })
       .populate("instructor_id", "name email mobile")
-      .populate("sell_id")
+      .populate("sell_id").populate('created_by')
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
@@ -494,7 +484,6 @@ exports.updateBookingStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
     const booking_id = req.params.id;
-    const school_id = req.user.school_id;
     const created_by = req.user._id;
     console.log('calling....')
 
@@ -532,7 +521,6 @@ exports.updateBookingStatus = async (req, res, next) => {
         credit_hours: -Number(getbook.credit_use),
         reference_id: getbook._id,
         reference: "booking",
-        school_id,
         created_by,
       });
     } else if (status === "cancelled" && getbook.status !== "cancelled") {
@@ -549,12 +537,11 @@ exports.updateBookingStatus = async (req, res, next) => {
         credit_hours: Number(getbook.credit_use),
         reference_id: getbook._id,
         reference: "booking",
-        school_id,
         created_by,
       });
     }
     const updated = await booking.findOneAndUpdate(
-      { _id: booking_id, school_id },
+      { _id: booking_id },
       { $set: { status } },
       { new: true },
     );
@@ -582,11 +569,9 @@ exports.updateBookingStatus = async (req, res, next) => {
 exports.deleteBooking = async (req, res, next) => {
   try {
     const booking_id = req.params.id;
-    const school_id = req.user.school_id;
 
     const existingBooking = await booking.findOne({
       _id: booking_id,
-      school_id,
       deleted_at: null,
     });
 

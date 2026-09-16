@@ -7,7 +7,6 @@ const pupilModel = require("../../models/DS/pupil.model");
 exports.createPrice = async (req, res, next) => {
   try {
     const { branch_id, package_id, price } = req.body;
-    const school_id = req.user.school_id;
 
     if (!branch_id || !package_id || price === undefined) {
       return res.status(400).json({
@@ -26,7 +25,6 @@ exports.createPrice = async (req, res, next) => {
     // 🔒 Validate Branch
     const branch = await areaModel.findOne({
       _id: branch_id,
-      school_id,
     });
 
     if (!branch) {
@@ -39,7 +37,6 @@ exports.createPrice = async (req, res, next) => {
     // 🔒 Validate Package
     const packageData = await PackageMaster.findOne({
       _id: package_id,
-      school_id,
     });
 
     if (!packageData) {
@@ -50,7 +47,6 @@ exports.createPrice = async (req, res, next) => {
     }
 
     const priceData = await PriceMaster.create({
-      school_id,
       branch_id,
       package_id,
       price,
@@ -74,13 +70,11 @@ exports.createPrice = async (req, res, next) => {
 
 
 /**
- * GET ALL Prices (same school only)
+ * GET ALL Prices
  */
 exports.getPrices = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
-    const prices = await PriceMaster.find({ school_id })
+    const prices = await PriceMaster.find()
       .populate("branch_id", "name")
       .populate("package_id", "package_name duration");
 
@@ -101,11 +95,8 @@ exports.getPrices = async (req, res, next) => {
  */
 exports.getPriceById = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
     const price = await PriceMaster.findOne({
       _id: req.params.id,
-      school_id,
     })
       .populate("branch_id")
       .populate("package_id", "package_name duration");
@@ -146,7 +137,6 @@ exports.getPriceById = async (req, res, next) => {
  */
 exports.updatePrice = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
     const package_id=req.body.package_id
 
     if (
@@ -161,7 +151,7 @@ exports.updatePrice = async (req, res, next) => {
 
     // 1️⃣ Update price master
     const updated = await PriceMaster.findOneAndUpdate(
-      { _id: req.params.id, school_id },
+      { _id: req.params.id },
       { $set: { price: req.body.price } },
       { new: true, runValidators: true }
     );
@@ -177,7 +167,6 @@ exports.updatePrice = async (req, res, next) => {
     await pupilModel.updateMany(
       {
         package_id: updated.package_id,
-        school_id: updated.school_id,
       },
       {
         $set: { pricing: updated.price },
@@ -202,11 +191,8 @@ exports.updatePrice = async (req, res, next) => {
  */
 exports.deletePrice = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
     const deleted = await PriceMaster.findOneAndDelete({
       _id: req.params.id,
-      school_id,
     });
 
     if (!deleted) {

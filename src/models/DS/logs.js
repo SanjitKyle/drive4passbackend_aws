@@ -1,9 +1,5 @@
 const mongoose = require('mongoose');
 const ActivityLogs = new mongoose.Schema({
-    school_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'school',
-    },
     enquire_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'enquire',

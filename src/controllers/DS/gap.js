@@ -90,13 +90,11 @@ function calculateEndTime(startTimeStr, hours, minutes) {
 // Create Gap
 exports.createGap = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const { date, start_time, instructor, color } = req.body;
 
         const durationInfo = parseDuration(req.body);
 
         const gap = await Gap.create({
-            school_id,
             date,
             start_time,
             duration_hours: durationInfo.duration_hours,
@@ -120,10 +118,7 @@ exports.createGap = async (req, res, next) => {
 // Get all Gaps
 exports.getAllGaps = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
-
-        const gaps = await Gap.find({ school_id })
-
+        const gaps = await Gap.find()
             .populate('instructor');
 
         res.status(200).json({
@@ -139,11 +134,9 @@ exports.getAllGaps = async (req, res, next) => {
 // Get Gap by ID
 exports.getGapById = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const { id } = req.params;
 
-        const gap = await Gap.findOne({ _id: id, school_id })
-
+        const gap = await Gap.findOne({ _id: id })
             .populate('instructor');
 
         if (!gap) {
@@ -163,11 +156,9 @@ exports.getGapById = async (req, res, next) => {
 // Get Gaps by Instructor ID
 exports.getGapsByInstructor = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const { instructorId } = req.params;
 
-        const gaps = await Gap.find({ instructor: instructorId, school_id })
-
+        const gaps = await Gap.find({ instructor: instructorId })
             .populate('instructor');
 
         res.status(200).json({
@@ -183,7 +174,6 @@ exports.getGapsByInstructor = async (req, res, next) => {
 // Update Gap
 exports.updateGap = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const { id } = req.params;
 
         const updateData = { ...req.body };
@@ -203,7 +193,7 @@ exports.updateGap = async (req, res, next) => {
         }
 
         const gap = await Gap.findOneAndUpdate(
-            { _id: id, school_id },
+            { _id: id },
             updateData,
             { new: true }
         );
@@ -225,10 +215,9 @@ exports.updateGap = async (req, res, next) => {
 // Delete Gap
 exports.deleteGap = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const { id } = req.params;
 
-        const gap = await Gap.findOneAndDelete({ _id: id, school_id });
+        const gap = await Gap.findOneAndDelete({ _id: id });
 
         if (!gap) {
             return res.status(404).json({ status: false, message: 'Gap not found' });
@@ -246,7 +235,6 @@ exports.deleteGap = async (req, res, next) => {
 // Convert Gap to Booking
 exports.convertGapToBooking = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const created_by = req.user._id;
         const gapId = req.params.id || req.body.gap_id;
 
@@ -257,7 +245,7 @@ exports.convertGapToBooking = async (req, res, next) => {
             });
         }
 
-        const gap = await Gap.findOne({ _id: gapId, school_id });
+        const gap = await Gap.findOne({ _id: gapId });
         if (!gap) {
             return res.status(404).json({
                 success: false,
@@ -343,7 +331,7 @@ exports.convertGapToBooking = async (req, res, next) => {
         }
 
         // Check Pupil credit hours
-        const allBookings = await Booking.find({ pupil_id, school_id });
+        const allBookings = await Booking.find({ pupil_id });
         const totalPreviousSpent = allBookings.reduce(
             (sum, b) => sum + (b.status !== 'cancelled' ? Number(b.credit_use) || 0 : 0),
             0
@@ -364,7 +352,6 @@ exports.convertGapToBooking = async (req, res, next) => {
 
         // Create Booking
         const createdBooking = await Booking.create({
-            school_id,
             instructor_id: targetInstructorId,
             pupil_id,
             title,
@@ -407,7 +394,6 @@ exports.convertGapToBooking = async (req, res, next) => {
                 credit_hours: -Number(credit_use),
                 reference_id: createdBooking._id,
                 reference: 'booking',
-                school_id,
                 created_by
             });
         }

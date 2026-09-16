@@ -2,13 +2,6 @@ const mongoose = require('mongoose');
 
 const pupilCreditLogsSchema = new mongoose.Schema(
   {
-    school_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'school',
-      required: true,
-      index: true,
-    },
-
     pupil_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'pupil',

@@ -32,7 +32,7 @@ exports.createSale = async (req, res, next) => {
   try {
     session.startTransaction();
 
-    if (!req.user || !req.user._id || !req.user.school_id) {
+    if (!req.user || !req.user._id) {
       throw Object.assign(new Error("Unauthorized"), { status: 401 });
     }
 
@@ -57,23 +57,14 @@ exports.createSale = async (req, res, next) => {
     // =========================
     // Find pupil by pupil_id OR email
     // =========================
-    // =========================
-    // Find pupil by pupil_id OR email
-    // =========================
     let pupil;
 
     if (pupil_id) {
-      pupil = await Pupil.findOne({
-        _id: pupil_id,
-        school_id: req.user.school_id,
-      }).session(session);
+      pupil = await Pupil.findById(pupil_id).session(session);
 
     } else if (email) {
 
-      pupil = await Pupil.findOne({
-        email,
-        school_id: req.user.school_id,
-      }).session(session);
+      pupil = await Pupil.findOne({ email }).session(session);
 
       // Create pupil if not found
       if (!pupil) {
@@ -83,7 +74,6 @@ exports.createSale = async (req, res, next) => {
               email,
               phone,
               full_name,
-              school_id: req.user.school_id,
               created_by: req.user._id,
               total_credit: 0,
               remaining_hour: 0,
@@ -112,7 +102,6 @@ exports.createSale = async (req, res, next) => {
     // Assign pupil_id from found pupil
     data.pupil_id = pupil._id;
 
-    data.school_id = req.user.school_id;
     data.created_by = req.user._id;
     data.credited_hour = packageData.duration;
 
@@ -124,7 +113,6 @@ exports.createSale = async (req, res, next) => {
     }
 
     const credit_hours = packageData.duration;
-    const school_id = req.user.school_id;
 
     // Create credit log
     const creditResult = await createCreditLog(
@@ -132,7 +120,6 @@ exports.createSale = async (req, res, next) => {
         pupil_id: pupil._id,
         credit_hours,
         reference: "sale",
-        school_id,
         created_by: data.created_by,
       },
       session
@@ -158,7 +145,6 @@ exports.createSale = async (req, res, next) => {
     const bookings = await bookingModel
       .find({
         pupil_id: pupil._id,
-        school_id,
       })
       .session(session);
 
@@ -190,19 +176,17 @@ exports.createSale = async (req, res, next) => {
 };
 
 /* =========================
-   GET ALL SALES (SCHOOL)
+   GET ALL SALES
 ========================= */
 exports.getAllSales = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.school_id) {
+    if (!req.user) {
       return next(Object.assign(new Error("Unauthorized"), { status: 401 }));
     }
 
     const sales = await Sale.find({
       deleted_at: null,
-      school_id: req.user.school_id,
     })
-      .populate("school_id", "school_name")
       .populate("pupil_id", "full_name email")
       .populate("package_id", "name duration")
       .populate("area_id", "name")
@@ -216,11 +200,11 @@ exports.getAllSales = async (req, res, next) => {
 };
 
 /* =========================
-   GET SALE BY ID (SCHOOL)
+   GET SALE BY ID
 ========================= */
 exports.getSaleById = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.school_id) {
+    if (!req.user) {
       return next(Object.assign(new Error("Unauthorized"), { status: 401 }));
     }
 
@@ -233,9 +217,7 @@ exports.getSaleById = async (req, res, next) => {
     const sale = await Sale.findOne({
       _id: id,
       deleted_at: null,
-      school_id: req.user.school_id,
     })
-      .populate("school_id", "school_name")
       .populate("pupil_id", "full_name email")
       .populate("package_id", "name duration")
       .populate("area_id", "name")
@@ -257,7 +239,7 @@ exports.getSaleById = async (req, res, next) => {
 ========================= */
 exports.updateSale = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.school_id) {
+    if (!req.user) {
       return next(Object.assign(new Error("Unauthorized"), { status: 401 }));
     }
 
@@ -270,7 +252,6 @@ exports.updateSale = async (req, res, next) => {
     const sale = await Sale.findOne({
       _id: id,
       deleted_at: null,
-      school_id: req.user.school_id,
     });
 
     if (!sale) {
@@ -321,7 +302,7 @@ exports.updateSale = async (req, res, next) => {
 ========================= */
 exports.deleteSale = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.school_id) {
+    if (!req.user) {
       return next(Object.assign(new Error("Unauthorized"), { status: 401 }));
     }
 
@@ -334,7 +315,6 @@ exports.deleteSale = async (req, res, next) => {
     const sale = await Sale.findOne({
       _id: id,
       deleted_at: null,
-      school_id: req.user.school_id,
     });
 
     if (!sale) {

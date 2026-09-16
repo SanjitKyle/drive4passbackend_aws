@@ -2,12 +2,6 @@ const mongoose = require("mongoose");
 
 const SaleSchema = new mongoose.Schema(
   {
-    school_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "school",
-      required: true,
-    },
-
     pupil_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "pupil",

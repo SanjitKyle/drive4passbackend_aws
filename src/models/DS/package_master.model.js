@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 
 const PackageMasterSchema = new mongoose.Schema(
   {
-    school_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "school",
-      required: true
-    },
     package_name: {
       type: String,
       required: true,

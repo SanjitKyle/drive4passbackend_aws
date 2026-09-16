@@ -189,7 +189,6 @@ exports.instructorSingup = async (req, res, next) => {
       email,
       mobile,
       password,
-      school_id,
       postcode,
       instructor_bio,
       full_address,
@@ -251,7 +250,6 @@ exports.instructorSingup = async (req, res, next) => {
       name,
       email,
       mobile,
-      school_id,
       postcode,
       instructor_bio,
       full_address,
@@ -460,7 +458,6 @@ exports.pupilLogin = async (req, res, next) => {
     const payload = {
       _id: pupil._id,
       role: "pupil",
-      school_id: pupil.school_id?._id
     };
 
 

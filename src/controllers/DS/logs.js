@@ -3,7 +3,6 @@ const ActivityLogs = require("../../models/DS/logs");
 // Create Log
 exports.createLog = async (req, res) => {
   try {
-    const school_id = req.user.school_id;
     const created_by = req.user._id;
     const { activity, enquire_id } = req.body;
 
@@ -15,7 +14,6 @@ exports.createLog = async (req, res) => {
     }
 
     const log = await ActivityLogs.create({
-      school_id,
       activity,
       enquire_id,
       created_by
@@ -38,10 +36,8 @@ exports.createLog = async (req, res) => {
 // Get All Logs
 exports.getLogs = async (req, res) => {
   try {
-    const school_id = req.user.school_id;
-
     const logs = await ActivityLogs
-      .find({ school_id })
+      .find()
       .populate("created_by", "name email")
       .sort({ createdAt: -1 });
 
@@ -115,12 +111,10 @@ exports.deleteLog = async (req, res) => {
 exports.getLogsByUser = async (req, res) => {
   try {
     const created_by = req.user._id;
-    const school_id = req.user.school_id;
 
     const logs = await ActivityLogs
       .find({
         created_by,
-        school_id
       })
       .populate("created_by", "name email")
       .sort({ createdAt: -1 });
@@ -149,11 +143,9 @@ exports.getLogsByUser = async (req, res) => {
 exports.getLogsByEnquireId = async (req, res) => {
   try {
     const { enquire_id } = req.params;
-    const school_id = req.user.school_id;
     const logs = await ActivityLogs
       .find({
         enquire_id,
-        school_id
       })
       .populate("created_by", "name email")
       .sort({ createdAt: -1 });

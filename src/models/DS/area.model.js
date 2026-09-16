@@ -2,11 +2,6 @@
 const mongoose = require('mongoose');
 
 const AreaSchema = new mongoose.Schema({
-    school_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'school',
-        required: true
-    },
     name: { type: String, required: true, maxLength: 255 },
     areacode: { type: String, required: true, maxLength: 10 },
     

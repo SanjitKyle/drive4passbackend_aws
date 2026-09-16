@@ -56,9 +56,7 @@ exports.createInstructorByAdmin = async (req, res, next) => {
 };
 exports.getInstructors = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
-    const instructors = await InstructorMaster.find({ school_id , deleted_at:null});
+    const instructors = await InstructorMaster.find({ deleted_at: null });
     console.log('instructors')
     if (!instructors) {
       return res.status(404).json({
@@ -77,15 +75,13 @@ exports.getInstructors = async (req, res, next) => {
 };
 exports.getInstructorById = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-    const instructor_id = req.params.id
+    const instructor_id = req.params.id;
     const instructor = await InstructorMaster.findOne({
       _id: req.params.id,
-      school_id,
-      deleted_at:null
+      deleted_at: null
     }).select('-password');
 
-    const days = await InstructorWorkingDay.find({ school_id, instructor_id }).sort({ day_of_week: 1 });
+    const days = await InstructorWorkingDay.find({ instructor_id }).sort({ day_of_week: 1 });
 
     console.log('instructor find', instructor)
 
@@ -107,8 +103,6 @@ exports.getInstructorById = async (req, res, next) => {
 };
 exports.updateInstructor = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
     const updatedData = {};
 
     // Only update fields sent from frontend
@@ -153,7 +147,7 @@ exports.updateInstructor = async (req, res, next) => {
     }
 
     const updated = await InstructorMaster.findOneAndUpdate(
-      { _id: req.params.id, school_id },
+      { _id: req.params.id },
       { $set: updatedData },
       { new: true, runValidators: true }
     );
@@ -194,11 +188,8 @@ exports.updateInstructor = async (req, res, next) => {
 };
 exports.deleteInstructor = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
     const deleted = await InstructorMaster.findByIdAndUpdate({
       _id: req.params.id,
-      school_id,
     }, {
       $set: {
         deleted_at: new Date(),
@@ -234,8 +225,7 @@ exports.confirmInstructor = async (req, res) => {
     }
 
     const instructor = await InstructorMaster.findById(instructorId)
-      .select("+password")
-      .populate("school_id");
+      .select("+password");
 
     if (!instructor) {
       return res.status(404).json({
@@ -244,8 +234,7 @@ exports.confirmInstructor = async (req, res) => {
       });
     }
 
-    const schoolId = instructor.school_id?._id || instructor.school_id || req.user?.school_id;
-    const businessName = instructor.school_id?.school_name || "Drive4pass";
+    const businessName = "Drive4pass";
 
     // Ensure a password exists before proceeding
     let passwordToUse = instructor.password;
@@ -268,16 +257,6 @@ exports.confirmInstructor = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(passwordToUse, 10);
 
-    // If branch_id is missing, try to find a branch for this school
-    let branchId = instructor.branch_id;
-    if (!branchId && schoolId) {
-      const BranchModel = require('../../models/branch.model');
-      const defaultBranch = await BranchModel.findOne({ school_id: schoolId });
-      if (defaultBranch) {
-        branchId = defaultBranch._id;
-      }
-    }
-
     // Create user if not exists
     if (!instructorUser) {
       instructorUser = new UserModel({
@@ -286,8 +265,6 @@ exports.confirmInstructor = async (req, res) => {
         mobile: instructor.mobile,
         password: hashedPassword,
         role: "instructor",
-        school_id: schoolId || null,
-        branch_id: branchId || null,
         status: 1,
       });
 
@@ -296,8 +273,6 @@ exports.confirmInstructor = async (req, res) => {
       instructorUser.role = "instructor";
       instructorUser.status = 1;
       instructorUser.password = hashedPassword;
-      if (schoolId) instructorUser.school_id = schoolId;
-      if (branchId) instructorUser.branch_id = branchId;
       await instructorUser.save();
     }
 
@@ -336,10 +311,9 @@ exports.confirmInstructor = async (req, res) => {
 exports.notifyInstructorCredentials = async (req, res, next) => {
   try {
     const instructorId = req.params.id;
-    const school_id = req.user.school_id;
 
     // Fetch instructor with password included
-    const instructor = await InstructorMaster.findOne({ _id: instructorId, school_id }).select("+password");
+    const instructor = await InstructorMaster.findOne({ _id: instructorId }).select("+password");
 
     if (!instructor) {
       return res.status(404).json({
@@ -355,8 +329,7 @@ exports.notifyInstructorCredentials = async (req, res, next) => {
       });
     }
 
-    const school = await SchoolModel.findById(school_id);
-    const businessName =  "Drive4pass";
+    const businessName = "Drive4pass";
 
     await InstructorUpdateProfileMail(businessName, instructor.email, instructor.password, instructor.name);
 

@@ -5,7 +5,7 @@ const pupilCreditLogs = require("../../models/DS/pupil_credit_logs.model");
  */
 exports.createCreditLog = async (obj, session) => {
   try {
-    const { pupil_id, credit_hours, reference, created_by, school_id ,reference_id} = obj;
+    const { pupil_id, credit_hours, reference, created_by, reference_id } = obj;
 
     if (!pupil_id || credit_hours === undefined || !reference) {
       return {
@@ -22,12 +22,11 @@ exports.createCreditLog = async (obj, session) => {
     const log = await pupilCreditLogs.create(
       [
         {
-          school_id,
           pupil_id,
           credit_hours: creditValue,
           reference,
           created_by,
-          reference_id
+          reference_id,
         },
       ],
       { session },
@@ -45,7 +44,6 @@ exports.createCreditLog = async (obj, session) => {
 exports.getLogsByPupil = async (req, res, next) => {
   try {
     const pupil_id = req.params.id;
-    const school_id = req.user.school_id;
 
     if (!pupil_id) {
       return res.status(400).json({
@@ -55,7 +53,7 @@ exports.getLogsByPupil = async (req, res, next) => {
     }
 
     const logs = await pupilCreditLogs
-      .find({ pupil_id, school_id , deleted_at:null})
+      .find({ pupil_id, deleted_at: null })
       .sort({ createdAt: -1 });
       if(!logs)
       {

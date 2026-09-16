@@ -1,20 +1,9 @@
 const BranchModel = require('../../models/DS/area.model');
-const SchoolModel = require('../../models/school.model'); // Required for checking if school exists
 
 // Create Branch
 exports.createBranch = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const school_id = req.user.school_id;
-
-    if (!school_id) {
-      return res.status(400).json({ status: false, message: 'School ID is required.' });
-    }
-
-    const school = await SchoolModel.findById(school_id);
-    if (!school) {
-      return res.status(404).json({ status: false, message: 'School not found.' });
-    }
 
     const {
       name,
@@ -26,7 +15,6 @@ exports.createBranch = async (req, res, next) => {
       name,
       areacode,
       status,
-      school_id,
       created_by: userId,
       last_updated_by: userId
     };
@@ -38,13 +26,10 @@ exports.createBranch = async (req, res, next) => {
   }
 };
 
-// Get all branches for user's school
+// Get all branches
 exports.getAllBranches = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
-    const branches = await BranchModel.find({ school_id })
-      .populate('school_id')
+    const branches = await BranchModel.find()
       .populate('created_by')
       .populate('last_updated_by');
 
@@ -54,14 +39,12 @@ exports.getAllBranches = async (req, res, next) => {
   }
 };
 
-// Get branch by ID (only if belongs to user's school)
+// Get branch by ID
 exports.getBranchById = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
     const id = req.params.id;
 
-    const branch = await BranchModel.findOne({ _id: id, school_id })
-      .populate('school_id')
+    const branch = await BranchModel.findOne({ _id: id })
       .populate('created_by')
       .populate('last_updated_by');
 
@@ -73,15 +56,14 @@ exports.getBranchById = async (req, res, next) => {
   }
 };
 
-// Update branch (only if belongs to user's school)
+// Update branch
 exports.updateBranch = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const school_id = req.user.school_id;
     req.body.last_updated_by = userId;
 
     const branch = await BranchModel.findOneAndUpdate(
-      { _id: req.params.id, school_id },
+      { _id: req.params.id },
       req.body,
       { new: true }
     );
@@ -94,12 +76,10 @@ exports.updateBranch = async (req, res, next) => {
   }
 };
 
-// Delete branch (only if belongs to user's school)
+// Delete branch
 exports.deleteBranch = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
-
-    const branch = await BranchModel.findOneAndDelete({ _id: req.params.id, school_id });
+    const branch = await BranchModel.findOneAndDelete({ _id: req.params.id });
 
     if (!branch) return res.status(404).json({ status: false, message: 'Branch not found' });
 

@@ -16,7 +16,6 @@ const isValidTime = (time) =>
  */
 exports.setInstructorWorkingHours = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
     const {
       instructor_id,
       day_of_week,
@@ -84,7 +83,6 @@ exports.setInstructorWorkingHours = async (req, res, next) => {
     /** 🔒 Instructor validation */
     const instructor = await Instructor.findOne({
       _id: instructor_id,
-      school_id,
     });
 
     if (!instructor) {
@@ -95,7 +93,7 @@ exports.setInstructorWorkingHours = async (req, res, next) => {
     }
 
     const record = await InstructorWorkingHour.findOneAndUpdate(
-      { school_id, instructor_id, day_of_week },
+      { instructor_id, day_of_week },
       {
         $set: {
           start_time,
@@ -122,12 +120,10 @@ exports.setInstructorWorkingHours = async (req, res, next) => {
  */
 exports.getInstructorWorkingHours = async (req, res, next) => {
   try {
-    const school_id = req.user.school_id;
     const instructor_id = req.params.instructor_id;
     const { day_of_week } = req.query; // 👈 receive day
 
     const query = {
-      school_id,
       instructor_id,
     };
 

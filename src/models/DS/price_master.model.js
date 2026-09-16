@@ -2,13 +2,6 @@ const mongoose = require("mongoose");
 
 const PriceMasterSchema = new mongoose.Schema(
   {
-    school_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "school",
-
-  
-    },
-
     branch_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "area",

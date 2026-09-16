@@ -3,10 +3,6 @@ const bcrypt = require("bcryptjs");
 
 const InstructorMasterSchema = new mongoose.Schema(
   {
-    school_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "school",
-    },
     name: {
       type: String,
       trim: true,

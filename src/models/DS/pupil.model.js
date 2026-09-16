@@ -57,12 +57,6 @@ const PupilSchema = new mongoose.Schema(
       ref: "InstructorMaster",
     },
 
-    school_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "school",
-      required: true, // auto-filled from instructor
-    },
-
     progress: {
       type: Number,
       default: 0,

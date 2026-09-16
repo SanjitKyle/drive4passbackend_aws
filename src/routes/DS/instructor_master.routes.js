@@ -33,8 +33,6 @@ const router = express.Router();
  *                 type: string
  *               mobile:
  *                 type: string
- *               school_id:
- *                 type: string
  *               postcode:
  *                 type: array
  *                 items:
@@ -168,8 +166,6 @@ router.get("/instructor-masters/:id",  InstructorController.getInstructorById);
  *               mobile:
  *                 type: string
  *               password:
- *                 type: string
- *               school_id:
  *                 type: string
  *               postcode:
  *                 type: array

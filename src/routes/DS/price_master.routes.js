@@ -74,8 +74,6 @@ router.post("/price-masters",  PriceMasterController.createPrice);
  *                     properties:
  *                       _id:
  *                         type: string
- *                       school_id:
- *                         type: string
  *                       branch_id:
  *                         type: object
  *                         properties:

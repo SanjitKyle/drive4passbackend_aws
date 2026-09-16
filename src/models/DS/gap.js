@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const GapSchema = new mongoose.Schema({
-    school_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "school"
-    },
     date: {
         type: Date
     },

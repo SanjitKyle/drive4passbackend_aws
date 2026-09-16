@@ -4,7 +4,6 @@ const InstructorMaster = require('../../models/DS/instructor_master.model');
 // Create Away
 exports.createAway = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const created_by = req.user._id;
 
         const { instructor_id, date, start_time, end_time, reason, status, color } = req.body;
@@ -25,7 +24,6 @@ exports.createAway = async (req, res, next) => {
         }
 
         const away = await Away.create({
-            school_id,
             instructor_id,
             date,
             start_time,
@@ -46,15 +44,11 @@ exports.createAway = async (req, res, next) => {
     }
 };
 
-// Get all Away records for user's school
+// Get all Away records
 exports.getAllAway = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
-
-        const aways = await Away.find({ school_id })
-
-            .populate('instructor_id')
-
+        const aways = await Away.find()
+            .populate('instructor_id');
 
         res.status(200).json({
             status: true,
@@ -69,13 +63,10 @@ exports.getAllAway = async (req, res, next) => {
 // Get Away by ID
 exports.getAwayById = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const { id } = req.params;
 
-        const away = await Away.findOne({ _id: id, school_id })
-
-            .populate('instructor_id')
-
+        const away = await Away.findOne({ _id: id })
+            .populate('instructor_id');
 
         if (!away) {
             return res.status(404).json({ status: false, message: 'Away record not found.' });
@@ -94,13 +85,10 @@ exports.getAwayById = async (req, res, next) => {
 // Get Away records by Instructor ID
 exports.getAwayByInstructor = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const { instructorId } = req.params;
 
-        const aways = await Away.find({ instructor_id: instructorId, school_id })
-
-            .populate('instructor_id')
-
+        const aways = await Away.find({ instructor_id: instructorId })
+            .populate('instructor_id');
 
         res.status(200).json({
             status: true,
@@ -115,14 +103,13 @@ exports.getAwayByInstructor = async (req, res, next) => {
 // Update Away
 exports.updateAway = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const updated_by = req.user._id;
         const { id } = req.params;
 
         const updateData = { ...req.body, updated_by };
 
         const away = await Away.findOneAndUpdate(
-            { _id: id, school_id },
+            { _id: id },
             updateData,
             { new: true }
         );
@@ -144,10 +131,9 @@ exports.updateAway = async (req, res, next) => {
 // Delete Away
 exports.deleteAway = async (req, res, next) => {
     try {
-        const school_id = req.user.school_id;
         const { id } = req.params;
 
-        const away = await Away.findOneAndDelete({ _id: id, school_id });
+        const away = await Away.findOneAndDelete({ _id: id });
 
         if (!away) {
             return res.status(404).json({ status: false, message: 'Away record not found.' });
