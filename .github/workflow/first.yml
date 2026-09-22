@@ -1,0 +1,27 @@
+name: week 2 practice 3 caching 
+on:
+  workflow_dispatch:
+  
+jobs:
+  caching_job:
+    runs-on: ubuntu-latest 
+    steps:
+      - name : Try to load cache 
+        uses: actions/cache@v4
+        id: vault_check 
+        with:
+         path : './../src'
+         key: my-cache-v1
+
+      - name : Simulate downloading  (cahce miss)
+        if: steps.vault_check.outputs.cache-hit != 'true'
+        run: |
+          echo " Cache not found ! Doing a heavy dowloading "
+          sleep 10
+          mkdir -p ./../src
+          echo "Here is the massive downloaded data" > ./../src/data.txt
+
+      - name : Verify data exists
+        run: |
+          echo "Checking if the data is in our folder:"
+          cat ./../src/data.txt
