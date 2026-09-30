@@ -145,9 +145,6 @@ const io = new Server(server, {
   transports: ['websocket', 'polling']
 });
 
-// Make io accessible globally in express routes/controllers
-app.set('io', io);
-
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
   SocketServer(socket, io);

@@ -66,12 +66,6 @@ exports.sendMessage = async (req, res, next) => {
     // 3. Populate sender before returning
     const populatedMessage = await Message.findById(message._id).populate("sender");
 
-    // 4. Real-time Socket.IO broadcast
-    const io = req.app.get("io");
-    if (io) {
-      io.to(conversation_id).emit("receive_message", populatedMessage);
-    }
-
     return res.status(201).json({
       success: true,
       message: "Message sent successfully",
@@ -219,15 +213,6 @@ exports.deleteMessageForEveryone = async (req, res, next) => {
     message.isDeletedForEveryone = true;
     message.text = "This message was deleted";
     await message.save();
-
-    const io = req.app.get("io");
-    if (io) {
-      io.to(message.conversation.toString()).emit("message_deleted", {
-        conversation_id: message.conversation,
-        message_id: message._id,
-        isDeletedForEveryone: true,
-      });
-    }
 
     return res.status(200).json({
       success: true,
