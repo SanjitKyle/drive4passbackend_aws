@@ -58,6 +58,8 @@ const swaggerDefinition = {
     { name: 'Course', description: 'Course management' },
     { name: 'User', description: 'User management' },
     { name: 'Branch', description: 'Branch management' },
+    { name: 'Conversation', description: 'Conversation management' },
+    { name: 'Message', description: 'Message management' },
     { name: 'Auth', description: 'Authentication related endpoints' },
   ],
   components: {

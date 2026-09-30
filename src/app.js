@@ -1,19 +1,26 @@
 const express = require('express');
+const http = require('http');
 const dotenv = require('dotenv').config();
 const connectMongoDb = require('./config/mongodb');
 const cors = require('cors');
 const path = require('path');
 const errorHandler = require('./middleware/errorHandler');
 const authMiddleware = require('./middleware/auth.middleware');
+const { Server } = require('socket.io');
 
 const authRoutes = require('./routes/auth.routes');
 
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger.config.js');
+const SocketServer = require('./utils/SocketServer.js');
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const server = http.createServer(app);
+
+
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -104,7 +111,9 @@ app.use('/api/ds', authMiddleware, [
   require('./routes/DS/pdi_fees_amount.routes'),
   require('./routes/DS/internal_note.routes.js'),
   require('./routes/DS/gap.routes.js'),
-  require('./routes/DS/away.routes.js')
+  require('./routes/DS/away.routes.js'),
+  require('./routes/DS/conversation.routes.js'),
+  require('./routes/DS/message.routes.js')
 ]);
 
 
@@ -127,9 +136,25 @@ app.use((req, res) => {
 // Error handler (at the end of all routes)
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 8080;
-// app.listen(PORT);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  transports: ['websocket', 'polling']
+});
 
-app.listen(PORT, () => {
+// Make io accessible globally in express routes/controllers
+app.set('io', io);
+
+io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
+  SocketServer(socket, io);
+});
+
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, () => {
   console.log(`Listening on http://localhost:${PORT}`);
-})
+});
